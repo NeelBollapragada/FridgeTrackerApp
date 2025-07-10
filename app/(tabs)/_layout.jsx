@@ -32,9 +32,14 @@ const _layout = () => {
         options={{
           title: "Fridge",
           headerShown: true,
+          headerStyle: {
+            borderBottomColor: "gray",
+            borderBottomWidth: 0.2,
+          },
           headerTitleStyle: {
             marginLeft: 15,
           },
+          headerShadowVisible: false,
           tabBarIcon: ({ focused }) => (
             <TabIcon focused={focused} icon="fridge" title="Fridge" />
           ),
