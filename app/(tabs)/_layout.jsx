@@ -32,6 +32,14 @@ const _layout = () => {
         options={{
           title: "Fridge",
           headerShown: true,
+          headerStyle: {
+            borderBottomColor: "gray",
+            borderBottomWidth: 0.2,
+          },
+          headerTitleStyle: {
+            marginLeft: 15,
+          },
+          headerShadowVisible: false,
           tabBarIcon: ({ focused }) => (
             <TabIcon focused={focused} icon="fridge" title="Fridge" />
           ),
@@ -40,8 +48,11 @@ const _layout = () => {
       <Tabs.Screen
         name="list"
         options={{
-          title: "List",
+          title: "Shopping List",
           headerShown: true,
+          headerTitleStyle: {
+            marginLeft: 15,
+          },
           tabBarIcon: ({ focused }) => (
             <TabIcon focused={focused} icon="invoice-list" title="List" />
           ),
