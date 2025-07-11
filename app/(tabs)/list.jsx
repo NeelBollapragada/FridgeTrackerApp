@@ -11,7 +11,7 @@ import {
   View,
 } from "react-native";
 import { Icon } from "react-native-paper";
-import { getDB, readDB } from "../../services/sqlite";
+import { clearDB, getDB, insertDB, readDB } from "../../services/sqlite";
 
 const List = () => {
   const navigation = useNavigation();
@@ -28,6 +28,22 @@ const List = () => {
     init();
   }, []);
 
+  useEffect(() => {
+    const timeoutId = setTimeout(async () => {
+      const shoppingItems = text
+        .split("\n")
+        .map((item) => item.trim())
+        .filter((item) => item.length > 0);
+
+      await clearDB(database);
+      for (const item of shoppingItems) {
+        await insertDB(database, item);
+      }
+    }, 500);
+
+    return () => clearTimeout(timeoutId);
+  }, [text]);
+
   useLayoutEffect(() => {
     navigation.setOptions({
       headerRight: () => (
@@ -35,7 +51,6 @@ const List = () => {
           <TouchableOpacity
             className="mr-1"
             onPress={async () => {
-              console.log(text.split("\n"));
               const dbContents = await readDB(database);
               console.log(dbContents);
             }}
