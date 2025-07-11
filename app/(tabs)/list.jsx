@@ -8,7 +8,9 @@ import {
   Text,
   TextInput,
   TouchableOpacity,
+  View,
 } from "react-native";
+import { Icon } from "react-native-paper";
 
 const List = () => {
   const navigation = useNavigation();
@@ -17,16 +19,21 @@ const List = () => {
   useLayoutEffect(() => {
     navigation.setOptions({
       headerRight: () => (
-        <TouchableOpacity
-          className="mr-3"
-          onPress={() => {
-            if (text.length > 0) {
-              clearList();
-            }
-          }}
-        >
-          <Text className="text-black font-medium px-3 py-2">CLEAR</Text>
-        </TouchableOpacity>
+        <View className="flex-row justify-center items-center">
+          <TouchableOpacity className="mr-1">
+            <Icon source="playlist-check" color="#000" size={30} />
+          </TouchableOpacity>
+          <TouchableOpacity
+            className="mr-3"
+            onPress={() => {
+              if (text.length > 0) {
+                clearList();
+              }
+            }}
+          >
+            <Text className="text-black font-medium px-3 py-2">CLEAR</Text>
+          </TouchableOpacity>
+        </View>
       ),
     });
   }, [navigation, text]);
