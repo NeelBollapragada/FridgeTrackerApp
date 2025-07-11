@@ -22,6 +22,8 @@ const List = () => {
     const init = async () => {
       const dbInstance = await getDB();
       setDatabase(dbInstance);
+      const dbContents = await readDB(dbInstance);
+      setText(dbContents.join("\n"));
     };
     init();
   }, []);

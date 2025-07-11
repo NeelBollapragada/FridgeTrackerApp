@@ -20,6 +20,6 @@ export const setDB = async (db) => {
 };
 
 export const readDB = async (db) => {
-  const results = await db.getAllAsync("SELECT * from shopping");
-  return results;
+  const results = await db.getAllAsync("SELECT (item) from shopping");
+  return results.map((elem) => elem.item);
 };
