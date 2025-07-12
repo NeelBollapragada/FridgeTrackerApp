@@ -11,7 +11,12 @@ import {
   View,
 } from "react-native";
 import { Icon } from "react-native-paper";
-import { clearDB, getDB, insertDB, readDB } from "../../services/sqlite";
+import {
+  clearShoppingDB,
+  getDB,
+  insertShoppingDB,
+  readShoppingDB,
+} from "../../services/sqlite";
 
 const List = () => {
   const navigation = useNavigation();
@@ -22,7 +27,7 @@ const List = () => {
     const init = async () => {
       const dbInstance = await getDB();
       setDatabase(dbInstance);
-      const dbContents = await readDB(dbInstance);
+      const dbContents = await readShoppingDB(dbInstance);
       setText(dbContents.join("\n"));
     };
     init();
@@ -35,9 +40,9 @@ const List = () => {
         .map((item) => item.trim())
         .filter((item) => item.length > 0);
 
-      await clearDB(database);
+      await clearShoppingDB(database);
       for (const item of shoppingItems) {
-        await insertDB(database, item);
+        await insertShoppingDB(database, item);
       }
     }, 500);
 
@@ -51,7 +56,7 @@ const List = () => {
           <TouchableOpacity
             className="mr-1"
             onPress={async () => {
-              const dbContents = await readDB(database);
+              const dbContents = await readShoppingDB(database);
               console.log(dbContents);
             }}
           >
