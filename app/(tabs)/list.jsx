@@ -11,7 +11,12 @@ import {
   View,
 } from "react-native";
 import { Icon } from "react-native-paper";
-import { getDB, readDB } from "../../services/sqlite";
+import {
+  clearShoppingDB,
+  getDB,
+  insertShoppingDB,
+  readShoppingDB,
+} from "../../services/sqlite";
 
 const List = () => {
   const navigation = useNavigation();
@@ -22,11 +27,27 @@ const List = () => {
     const init = async () => {
       const dbInstance = await getDB();
       setDatabase(dbInstance);
-      const dbContents = await readDB(dbInstance);
+      const dbContents = await readShoppingDB(dbInstance);
       setText(dbContents.join("\n"));
     };
     init();
   }, []);
+
+  useEffect(() => {
+    const timeoutId = setTimeout(async () => {
+      const shoppingItems = text
+        .split("\n")
+        .map((item) => item.trim())
+        .filter((item) => item.length > 0);
+
+      await clearShoppingDB(database);
+      for (const item of shoppingItems) {
+        await insertShoppingDB(database, item);
+      }
+    }, 500);
+
+    return () => clearTimeout(timeoutId);
+  }, [text]);
 
   useLayoutEffect(() => {
     navigation.setOptions({
@@ -35,8 +56,7 @@ const List = () => {
           <TouchableOpacity
             className="mr-1"
             onPress={async () => {
-              console.log(text.split("\n"));
-              const dbContents = await readDB(database);
+              const dbContents = await readShoppingDB(database);
               console.log(dbContents);
             }}
           >

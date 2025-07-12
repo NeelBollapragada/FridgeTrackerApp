@@ -14,12 +14,30 @@ export const setDB = async (db) => {
   await db.execAsync(
     `CREATE TABLE IF NOT EXISTS shopping (id INTEGER PRIMARY KEY NOT NULL, item TEXT NOT NULL);`
   );
-  await db.execAsync(`DELETE FROM shopping`);
-  await db.runAsync("INSERT INTO shopping (item) VALUES (?)", "roast lamb");
-  await db.runAsync("INSERT INTO shopping (item) VALUES (?)", "squash");
+  await db.execAsync(
+    `CREATE TABLE IF NOT EXISTS food_items (
+        code TEXT PRIMARY KEY NOT NULL, 
+        name TEXT NOT NULL,
+        image_url TEXT NOT NULL, 
+        energy_kcal REAL,
+        protein REAL,
+        carbohydrates REAL,
+        fat_total REAL,
+        fat_saturated REAL,
+        fat_unsaturated REAL
+    );`
+  );
 };
 
-export const readDB = async (db) => {
-  const results = await db.getAllAsync("SELECT (item) from shopping");
+export const readShoppingDB = async (db) => {
+  const results = await db.getAllAsync("SELECT item from shopping");
   return results.map((elem) => elem.item);
+};
+
+export const clearShoppingDB = async (db) => {
+  await db.execAsync(`DELETE FROM shopping`);
+};
+
+export const insertShoppingDB = async (db, elem) => {
+  await db.runAsync("INSERT INTO shopping (item) VALUES (?)", `${elem}`);
 };
