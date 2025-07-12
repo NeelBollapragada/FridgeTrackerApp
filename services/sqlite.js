@@ -30,7 +30,7 @@ export const setDB = async (db) => {
 };
 
 export const readShoppingDB = async (db) => {
-  const results = await db.getAllAsync("SELECT item from shopping");
+  const results = await db.getAllAsync("SELECT item FROM shopping");
   return results.map((elem) => elem.item);
 };
 
@@ -40,4 +40,11 @@ export const clearShoppingDB = async (db) => {
 
 export const insertShoppingDB = async (db, elem) => {
   await db.runAsync("INSERT INTO shopping (item) VALUES (?)", `${elem}`);
+};
+
+export const readFoodItemDB = async (db, lim) => {
+  const results = await db.getAllAsync(
+    `SELECT name, image_url, energy_kcal, protein, carbohydrates, fat_total, fat_saturated, fat_unsaturated FROM food_items LIMIT ${lim}`
+  );
+  return results;
 };

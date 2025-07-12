@@ -1,4 +1,6 @@
+import { useEffect, useState } from "react";
 import {
+  FlatList,
   Modal,
   StyleSheet,
   Text,
@@ -7,8 +9,29 @@ import {
   View,
 } from "react-native";
 import { Icon } from "react-native-paper";
+import { getDB, readFoodItemDB } from "../../services/sqlite";
+import AddFoodCard from "./AddFoodCard";
 
 const AddFoodModal = ({ modalVisible, setModalVisible }) => {
+  const [database, setDatabase] = useState(null);
+  const [query, setQuery] = useState([]);
+
+  useEffect(() => {
+    const init = async () => {
+      const dbInstance = await getDB();
+      setDatabase(dbInstance);
+    };
+    init();
+  }, []);
+
+  useEffect(() => {
+    const changeQuery = async () => {
+      const results = await readFoodItemDB(database, 1);
+      setQuery(results);
+    };
+    changeQuery();
+  }, [database]);
+
   return (
     <Modal
       animationType="slide"
@@ -34,6 +57,10 @@ const AddFoodModal = ({ modalVisible, setModalVisible }) => {
             className="ml-4 text-white"
           />
           <View className="h-[0.4px] bg-white w-full" />
+          <FlatList
+            data={query}
+            renderItem={({ item }) => <AddFoodCard food_item={item} />}
+          />
         </View>
       </View>
     </Modal>
