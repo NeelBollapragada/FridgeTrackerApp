@@ -62,9 +62,12 @@ const AddFoodModal = ({ modalVisible, setModalVisible }) => {
             <TouchableOpacity className="my-auto mx-4">
               <Text
                 className="text-white bg-slate-500 px-2 py-1 rounded-md"
-                onPress={() => setNewFood(true)}
+                onPress={() => {
+                  const newFoodToggle = !newFood;
+                  setNewFood(newFoodToggle);
+                }}
               >
-                New +
+                {newFood ? " Back " : "New + "}
               </Text>
             </TouchableOpacity>
           </View>
