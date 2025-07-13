@@ -16,6 +16,8 @@ const AddFoodModal = ({ modalVisible, setModalVisible }) => {
   const [database, setDatabase] = useState(null);
   const [query, setQuery] = useState([]);
 
+  const [newFood, setNewFood] = useState(false);
+
   useEffect(() => {
     const init = async () => {
       const dbInstance = await getDB();
@@ -50,24 +52,40 @@ const AddFoodModal = ({ modalVisible, setModalVisible }) => {
           <Text className="text-center text-white font-bold text-4xl mb-4">
             Add Food
           </Text>
-          <View className="h-[0.4px] bg-white w-full" />
-          <TextInput
-            placeholder="Search..."
-            placeholderTextColor="#9ca3af"
-            className="ml-4 text-white"
-          />
-          <View className="h-[0.4px] bg-white w-full" />
-          <FlatList
-            data={query}
-            renderItem={({ item }) => <AddFoodCard food_item={item} />}
-            ListFooterComponent={
-              <TouchableOpacity className="mt-5 mb-12 mx-auto">
-                <Text className="text-white bg-slate-700 px-3 py-2 rounded-lg">
-                  See more
-                </Text>
-              </TouchableOpacity>
-            }
-          />
+          <View className="h-px bg-white w-full opacity-50" />
+          <View className="flex-row">
+            <TextInput
+              placeholder="Search..."
+              placeholderTextColor="#9ca3af"
+              className="ml-4 text-white flex-1"
+            />
+            <TouchableOpacity className="my-auto mx-4">
+              <Text
+                className="text-white bg-slate-500 px-2 py-1 rounded-md"
+                onPress={() => setNewFood(true)}
+              >
+                New +
+              </Text>
+            </TouchableOpacity>
+          </View>
+          <View className="h-px bg-white w-full opacity-50" />
+          {newFood ? (
+            <Text className="text-white text-2xl font-bold text-center mt-2">
+              Create New Food Item
+            </Text>
+          ) : (
+            <FlatList
+              data={query}
+              renderItem={({ item }) => <AddFoodCard food_item={item} />}
+              ListFooterComponent={
+                <TouchableOpacity className="mt-5 mb-12 mx-auto">
+                  <Text className="text-white bg-slate-700 px-3 py-2 rounded-lg">
+                    See more
+                  </Text>
+                </TouchableOpacity>
+              }
+            />
+          )}
         </View>
       </View>
     </Modal>

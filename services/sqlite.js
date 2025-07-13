@@ -18,7 +18,7 @@ export const setDB = async (db) => {
     `CREATE TABLE IF NOT EXISTS food_items (
         code TEXT PRIMARY KEY NOT NULL, 
         name TEXT NOT NULL,
-        image_url TEXT NOT NULL, 
+        image_url TEXT, 
         energy_kcal REAL,
         protein REAL,
         carbohydrates REAL,
