@@ -6,8 +6,9 @@ import {
   TouchableOpacity,
   View,
 } from "react-native";
-import { readFridgeDB } from "../../services/sqlite";
+import { getDB, readFridgeDB } from "../../services/sqlite";
 import AddFoodModal from "../components/AddFoodModal";
+import FridgeCard from "../components/FridgeCard";
 import Searchbar from "../components/Searchbar";
 
 const Index = () => {
@@ -25,9 +26,9 @@ const Index = () => {
 
   useEffect(() => {
     const readData = async () => {
+      if (!database) return;
       const results = await readFridgeDB(database);
       setFridgeData(results);
-      console.log(results);
     };
     readData();
   }, [database]);
@@ -56,7 +57,7 @@ const Index = () => {
       ) : (
         <FlatList
           data={fridgeData}
-          renderItem={({ item }) => <Text>{item.name}</Text>}
+          renderItem={({ item }) => <FridgeCard food_item={item} />}
         />
       )}
     </View>

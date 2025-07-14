@@ -28,6 +28,7 @@ const AddFoodModal = ({ modalVisible, setModalVisible }) => {
 
   useEffect(() => {
     const changeQuery = async () => {
+      if (!database) return;
       const results = await readFoodItemDB(database, 20);
       setQuery(results);
     };
