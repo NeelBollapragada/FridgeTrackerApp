@@ -73,9 +73,9 @@ const FridgeCard = ({
   };
 
   const handleDate = (newDate) => {
-    const result = newDate.slice(0, 10).split("-").reverse().join("/");
+    const expires = newDate.slice(0, 10).split("-").reverse().join("/");
 
-    fridge_item.expiry_date = result;
+    fridge_item.expiry_date = expires;
     setDatePickerVisible(false);
   };
   return (
