@@ -27,6 +27,23 @@ export const setDB = async (db) => {
         fat_unsaturated REAL
     );`
   );
+  await db.execAsync(
+    `CREATE TABLE IF NOT EXISTS fridge_items (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    code TEXT NOT NULL
+    name TEXT NOT NULL,
+    image_url TEXT,
+    energy_kcal REAL,
+    protein REAL,
+    carbohydrates REAL,
+    fat_total REAL,
+    fat_saturated REAL,
+    fat_unsaturated REAL,
+    expiry_date TEXT,
+    quantity INTEGER,
+    unit TEXT
+    )`
+  );
 };
 
 export const readShoppingDB = async (db) => {
@@ -44,7 +61,35 @@ export const insertShoppingDB = async (db, elem) => {
 
 export const readFoodItemDB = async (db, lim) => {
   const results = await db.getAllAsync(
-    `SELECT name, image_url, energy_kcal, protein, carbohydrates, fat_total, fat_saturated, fat_unsaturated FROM food_items LIMIT ${lim}`
+    `SELECT code, name, image_url, energy_kcal, protein, carbohydrates, fat_total, fat_saturated, fat_unsaturated FROM food_items LIMIT ${lim}`
   );
+  return results;
+};
+
+export const insertFridgeItem = async (db, foodItem) => {
+  await db.runAsync(
+    "INSERT INTO fridge_items (code, name, image_url, energy_kcal, protein, carbohydrates, fat_total, fat_saturated, fat_unsaturated, expiry_date, quantity, unit) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
+    [
+      foodItem.code,
+      foodItem.name,
+      foodItem.image_url,
+      foodItem.energy_kcal,
+      foodItem.protein,
+      foodItem.carbohydrates,
+      foodItem.fat_total,
+      foodItem.fat_saturated,
+      foodItem.fat_unsaturated,
+      "",
+      1,
+      "",
+    ]
+  );
+};
+
+export const readFridgeDB = async (db) => {
+  const results = await db.getAllAsync(
+    `SELECT code, name, image_url, energy_kcal, protein, carbohydrates, fat_total, fat_saturated, fat_unsaturated, expiry_date, quantity, unit FROM fridge_items`
+  );
+
   return results;
 };

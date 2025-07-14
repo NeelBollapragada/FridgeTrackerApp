@@ -73,9 +73,17 @@ const AddFoodModal = ({ modalVisible, setModalVisible }) => {
           </View>
           <View className="h-px bg-white w-full opacity-50" />
           {newFood ? (
-            <Text className="text-white text-2xl font-bold text-center mt-2">
-              Create New Food Item
-            </Text>
+            <>
+              <Text className="text-white text-2xl font-bold text-center mt-2">
+                Create New Food Item
+              </Text>
+              <View>
+                <View className="flex-row">
+                  <Text className="text-gray-200">Name: </Text>
+                  <TextInput className="border border-width-[1px] border-gray-200 flex-1 text-white" />
+                </View>
+              </View>
+            </>
           ) : (
             <FlatList
               data={query}
