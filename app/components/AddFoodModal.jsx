@@ -28,6 +28,7 @@ const AddFoodModal = ({ modalVisible, setModalVisible }) => {
 
   useEffect(() => {
     const changeQuery = async () => {
+      if (!database) return;
       const results = await readFoodItemDB(database, 20);
       setQuery(results);
     };
@@ -73,13 +74,23 @@ const AddFoodModal = ({ modalVisible, setModalVisible }) => {
           </View>
           <View className="h-px bg-white w-full opacity-50" />
           {newFood ? (
-            <Text className="text-white text-2xl font-bold text-center mt-2">
-              Create New Food Item
-            </Text>
+            <>
+              <Text className="text-white text-2xl font-bold text-center mt-2">
+                Create New Food Item
+              </Text>
+              <View>
+                <View className="flex-row">
+                  <Text className="text-gray-200">Name: </Text>
+                  <TextInput className="border border-width-[1px] border-gray-200 flex-1 text-white" />
+                </View>
+              </View>
+            </>
           ) : (
             <FlatList
               data={query}
-              renderItem={({ item }) => <AddFoodCard food_item={item} />}
+              renderItem={({ item }) => (
+                <AddFoodCard food_item={item} db={database} />
+              )}
               ListFooterComponent={
                 <TouchableOpacity className="mt-5 mb-12 mx-auto">
                   <Text className="text-white bg-slate-700 px-3 py-2 rounded-lg">
