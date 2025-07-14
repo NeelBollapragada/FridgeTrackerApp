@@ -8,6 +8,7 @@ import {
   TouchableOpacity,
   View,
 } from "react-native";
+import DateTimePickerModal from "react-native-modal-datetime-picker";
 import { Icon, Menu } from "react-native-paper";
 import {
   deleteFridgeItemDB,
@@ -26,6 +27,7 @@ const FridgeCard = ({
   const [visible, setVisible] = useState(false);
   const [quantity, setQuantity] = useState(1);
   const [unit, setUnit] = useState("");
+  const [datePickerVisible, setDatePickerVisible] = useState(false);
 
   const handleClose = () => {
     Alert.alert("Remove Fridge Item", "Would you like to log or delete", [
@@ -69,6 +71,13 @@ const FridgeCard = ({
     fridge_item.unit = newUnit;
     await updateFridgeUnitDB(db, fridge_item.id, newUnit);
   };
+
+  const handleDate = (newDate) => {
+    const expires = newDate.slice(0, 10).split("-").reverse().join("/");
+
+    fridge_item.expiry_date = expires;
+    setDatePickerVisible(false);
+  };
   return (
     <View className="flex-row border border-gray-500 border-[2px] rounded-lg m-2">
       <Image
@@ -89,7 +98,10 @@ const FridgeCard = ({
           <TouchableOpacity onPress={() => setVisible(true)}>
             <Text className="mr-2">{`Quantity: ${fridge_item.quantity} ${fridge_item.unit}`}</Text>
           </TouchableOpacity>
-          <TouchableOpacity className="border border-gray-500 border-[1px] rounded-full mr-16">
+          <TouchableOpacity
+            className={`border border-gray-500 border-[1px] rounded-full ${fridge_item.expiry_date === "" ? "mr-16" : "mr-4"}`}
+            onPress={() => setDatePickerVisible(true)}
+          >
             <Text className="px-3 py-1">
               {fridge_item.expiry_date === ""
                 ? "Add Expiry"
@@ -215,6 +227,12 @@ const FridgeCard = ({
           <Text className="mr-2">F: {fridge_item.fat_total}g</Text>
         </View>
       </View>
+      <DateTimePickerModal
+        isVisible={datePickerVisible}
+        mode="date"
+        onConfirm={(date) => handleDate(date.toISOString())}
+        onCancel={() => setDatePickerVisible(false)}
+      />
     </View>
   );
 };
