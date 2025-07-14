@@ -65,7 +65,7 @@ export const readShoppingDB = async (db) => {
 
 export const clearShoppingDB = async (db) => {
   try {
-    await db.execAsync(`DELETE FROM shopping`);
+    await db.runAsync(`DELETE FROM shopping`);
   } catch (error) {
     console.error("4", error);
   }
@@ -113,19 +113,22 @@ export const insertFridgeItem = async (db, foodItem) => {
   } catch (error) {
     console.error("7", error);
   }
-
-  //   const results = await readFridgeDB(db);
-  //   console.log(results);
 };
 
 export const readFridgeDB = async (db) => {
   try {
     const results = await db.getAllAsync(
-      `SELECT code, name, image_url, energy_kcal, protein, carbohydrates, fat_total, fat_saturated, fat_unsaturated, expiry_date, quantity, unit FROM fridge_items`
+      `SELECT id, code, name, image_url, energy_kcal, protein, carbohydrates, fat_total, fat_saturated, fat_unsaturated, expiry_date, quantity, unit FROM fridge_items`
     );
 
     return results;
   } catch (error) {
     console.error("8", error);
   }
+};
+
+export const deleteFridgeItemDB = async (db, id) => {
+  try {
+    await db.runAsync("DELETE FROM fridge_items WHERE id = $id", { $id: id });
+  } catch (error) {}
 };
