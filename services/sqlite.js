@@ -91,9 +91,8 @@ export const readFoodItemDB = async (db, lim) => {
 };
 
 export const insertFridgeItem = async (db, foodItem) => {
-  console.log(foodItem);
   try {
-    await db.runAsync(
+    const result = await db.runAsync(
       "INSERT INTO fridge_items (code, name, image_url, energy_kcal, protein, carbohydrates, fat_total, fat_saturated, fat_unsaturated, expiry_date, quantity, unit) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
       [
         foodItem.code,
@@ -110,6 +109,14 @@ export const insertFridgeItem = async (db, foodItem) => {
         "",
       ]
     );
+    const id = result.lastInsertRowId;
+
+    const lastRow = await db.getAllAsync(
+      `SELECT * FROM fridge_items WHERE id = ?`,
+      [id]
+    );
+
+    return lastRow;
   } catch (error) {
     console.error("7", error);
   }
@@ -130,5 +137,29 @@ export const readFridgeDB = async (db) => {
 export const deleteFridgeItemDB = async (db, id) => {
   try {
     await db.runAsync("DELETE FROM fridge_items WHERE id = $id", { $id: id });
-  } catch (error) {}
+  } catch (error) {
+    console.error("9", error);
+  }
+};
+
+export const updateFridgeQuantityDB = async (db, id, newQuantity) => {
+  try {
+    await db.runAsync("UPDATE fridge_items SET quantity = ? WHERE id = ?", [
+      newQuantity,
+      id,
+    ]);
+  } catch (error) {
+    console.error("10", error);
+  }
+};
+
+export const updateFridgeUnitDB = async (db, id, newUnit) => {
+  try {
+    await db.runAsync("UPDATE fridge_items SET unit = ? WHERE id = ?", [
+      newUnit,
+      id,
+    ]);
+  } catch (error) {
+    console.error("11", error);
+  }
 };

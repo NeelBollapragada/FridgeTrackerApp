@@ -1,9 +1,25 @@
 import { Stack } from "expo-router";
 import { useEffect } from "react";
-import { Provider as PaperProvider } from "react-native-paper";
+import { DefaultTheme, Provider as PaperProvider } from "react-native-paper";
 import { preloadFoodItems } from "../services/preloadItems.js";
 import { getDB, setDB } from "../services/sqlite.js";
 import "./globals.css";
+
+const customTheme = {
+  ...DefaultTheme,
+  colors: {
+    ...DefaultTheme.colors,
+    primary: "#ffffff",
+    surface: "#ffffff",
+    background: "#ffffff",
+    primaryContainer: "#ffffff",
+    secondaryContainer: "#ffffff",
+    elevation: {
+      ...DefaultTheme.colors.elevation,
+      level2: "#ffffff",
+    },
+  },
+};
 
 export default function RootLayout() {
   useEffect(() => {
@@ -19,7 +35,7 @@ export default function RootLayout() {
   }, []);
 
   return (
-    <PaperProvider>
+    <PaperProvider theme={customTheme}>
       <Stack>
         <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
       </Stack>
