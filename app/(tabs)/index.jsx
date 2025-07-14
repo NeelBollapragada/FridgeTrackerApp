@@ -27,6 +27,7 @@ const Index = () => {
     const readData = async () => {
       const results = await readFridgeDB(database);
       setFridgeData(results);
+      console.log(results);
     };
     readData();
   }, [database]);

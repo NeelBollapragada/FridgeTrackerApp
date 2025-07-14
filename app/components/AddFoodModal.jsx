@@ -87,7 +87,9 @@ const AddFoodModal = ({ modalVisible, setModalVisible }) => {
           ) : (
             <FlatList
               data={query}
-              renderItem={({ item }) => <AddFoodCard food_item={item} />}
+              renderItem={({ item }) => (
+                <AddFoodCard food_item={item} db={database} />
+              )}
               ListFooterComponent={
                 <TouchableOpacity className="mt-5 mb-12 mx-auto">
                   <Text className="text-white bg-slate-700 px-3 py-2 rounded-lg">
