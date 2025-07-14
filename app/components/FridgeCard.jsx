@@ -9,7 +9,14 @@ import {
 import { Icon } from "react-native-paper";
 import { deleteFridgeItemDB } from "../../services/sqlite";
 
-const FridgeCard = ({ fridge_item, db, fridgeData, setFridgeData }) => {
+const FridgeCard = ({
+  fridge_item,
+  db,
+  fridgeData,
+  setFridgeData,
+  filteredData,
+  setFilteredData,
+}) => {
   const handleClose = () => {
     Alert.alert("Remove Fridge Item", "Would you like to log or delete", [
       {
@@ -27,6 +34,10 @@ const FridgeCard = ({ fridge_item, db, fridgeData, setFridgeData }) => {
             (item) => item.id !== fridge_item.id
           );
           setFridgeData(currData);
+          const currQuery = filteredData.filter(
+            (item) => item.id !== fridge_item.id
+          );
+          setFilteredData(currQuery);
           await deleteFridgeItemDB(db, fridge_item.id);
         },
       },

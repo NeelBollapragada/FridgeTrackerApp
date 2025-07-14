@@ -65,6 +65,8 @@ const Index = () => {
               db={database}
               fridgeData={fridgeData}
               setFridgeData={setFridgeData}
+              filteredData={filteredData}
+              setFilteredData={setFilteredData}
             />
           )}
           ListFooterComponent={<View className="h-32" />}
