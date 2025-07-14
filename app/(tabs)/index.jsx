@@ -57,7 +57,8 @@ const Index = () => {
       ) : (
         <FlatList
           data={fridgeData}
-          renderItem={({ item }) => <FridgeCard food_item={item} />}
+          renderItem={({ item }) => <FridgeCard fridge_item={item} />}
+          ListFooterComponent={<View className="h-32" />}
         />
       )}
     </View>

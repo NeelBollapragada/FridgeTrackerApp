@@ -113,9 +113,6 @@ export const insertFridgeItem = async (db, foodItem) => {
   } catch (error) {
     console.error("7", error);
   }
-
-  //   const results = await readFridgeDB(db);
-  //   console.log(results);
 };
 
 export const readFridgeDB = async (db) => {
