@@ -1,13 +1,19 @@
+import { useEffect, useState } from "react";
 import {
   Alert,
   Image,
   StyleSheet,
   Text,
+  TextInput,
   TouchableOpacity,
   View,
 } from "react-native";
-import { Icon } from "react-native-paper";
-import { deleteFridgeItemDB } from "../../services/sqlite";
+import { Icon, Menu } from "react-native-paper";
+import {
+  deleteFridgeItemDB,
+  updateFridgeQuantityDB,
+  updateFridgeUnitDB,
+} from "../../services/sqlite";
 
 const FridgeCard = ({
   fridge_item,
@@ -17,6 +23,10 @@ const FridgeCard = ({
   filteredData,
   setFilteredData,
 }) => {
+  const [visible, setVisible] = useState(false);
+  const [quantity, setQuantity] = useState(1);
+  const [unit, setUnit] = useState("");
+
   const handleClose = () => {
     Alert.alert("Remove Fridge Item", "Would you like to log or delete", [
       {
@@ -43,6 +53,22 @@ const FridgeCard = ({
       },
     ]);
   };
+  useEffect(() => {
+    setQuantity(fridge_item.quantity);
+    setUnit(fridge_item.unit);
+  }, []);
+
+  const handleQuantity = async (newQuantity) => {
+    setQuantity(newQuantity);
+    fridge_item.quantity = newQuantity;
+    await updateFridgeQuantityDB(db, fridge_item.id, newQuantity);
+  };
+
+  const handleUnit = async (newUnit) => {
+    setUnit(newUnit);
+    fridge_item.unit = newUnit;
+    await updateFridgeUnitDB(db, fridge_item.id, newUnit);
+  };
   return (
     <View className="flex-row border border-gray-500 border-[2px] rounded-lg m-2">
       <Image
@@ -59,11 +85,11 @@ const FridgeCard = ({
             <Icon source="close" size={22} />
           </TouchableOpacity>
         </View>
-        <View className="flex-row items-center mb-2">
-          <TouchableOpacity>
-            <Text className="mr-12">{`Quantity: ${fridge_item.quantity}${fridge_item.unit}`}</Text>
+        <View className="flex-row justify-between items-center mb-2">
+          <TouchableOpacity onPress={() => setVisible(true)}>
+            <Text className="mr-2">{`Quantity: ${fridge_item.quantity} ${fridge_item.unit}`}</Text>
           </TouchableOpacity>
-          <TouchableOpacity className="border border-gray-500 border-[1px] rounded-full">
+          <TouchableOpacity className="border border-gray-500 border-[1px] rounded-full mr-16">
             <Text className="px-3 py-1">
               {fridge_item.expiry_date === ""
                 ? "Add Expiry"
@@ -72,7 +98,118 @@ const FridgeCard = ({
           </TouchableOpacity>
         </View>
         <View className="flex-row">
-          <Text className="mr-3">Macros:</Text>
+          <Menu
+            visible={visible}
+            onDismiss={() => setVisible(false)}
+            anchor={<Text className="mr-3">Macros:</Text>}
+            style={{
+              backgroundColor: "transparent",
+              elevation: 0,
+              borderWidth: 0,
+              paddingVertical: 0,
+            }}
+          >
+            <View className="flex-col justify-center">
+              <TextInput
+                placeholder="quantity"
+                placeholderTextColor="#c0c0c0"
+                className="text-black border border-gray-900 h-auto mb-2"
+                style={{ textAlignVertical: "top" }}
+                keyboardType="numeric"
+              />
+              <View className="flex-row">
+                <View className="bg-white">
+                  <TouchableOpacity
+                    className="bg-white"
+                    onPress={() => handleQuantity(1)}
+                  >
+                    <Text className="text-center pb-2">1</Text>
+                  </TouchableOpacity>
+                  <View className="h-px bg-gray-800 w-full opacity-50" />
+                  <TouchableOpacity
+                    className="bg-white"
+                    onPress={() => handleQuantity(2)}
+                  >
+                    <Text className="text-center py-2">2</Text>
+                  </TouchableOpacity>
+                  <View className="h-px bg-gray-800 w-full opacity-50" />
+                  <TouchableOpacity
+                    className="bg-white"
+                    onPress={() => handleQuantity(5)}
+                  >
+                    <Text className="text-center py-2">5</Text>
+                  </TouchableOpacity>
+                  <View className="h-px bg-gray-800 w-full opacity-50" />
+                  <TouchableOpacity
+                    className="bg-white px-2"
+                    onPress={() => handleQuantity(100)}
+                  >
+                    <Text className="text-center py-2">100</Text>
+                  </TouchableOpacity>
+                  <View className="h-px bg-gray-800 w-full opacity-50" />
+                  <TouchableOpacity
+                    className="bg-white"
+                    onPress={() => handleQuantity(200)}
+                  >
+                    <Text className="text-center py-2">200</Text>
+                  </TouchableOpacity>
+                  <View className="h-px bg-gray-800 w-full opacity-50" />
+                  <TouchableOpacity
+                    className="bg-white"
+                    onPress={() => handleQuantity(400)}
+                  >
+                    <Text className="text-center py-2">400</Text>
+                  </TouchableOpacity>
+                </View>
+                <View className="h-full w-px bg-gray-800 opacity-30 mx-1" />
+                <View>
+                  <View className="bg-white">
+                    <TouchableOpacity
+                      className="bg-white"
+                      onPress={() => handleUnit("")}
+                    >
+                      <Text className="text-center pb-2">(none)</Text>
+                    </TouchableOpacity>
+                    <View className="h-px bg-gray-800 w-full opacity-50" />
+                    <TouchableOpacity
+                      className="bg-white"
+                      onPress={() => handleUnit("g")}
+                    >
+                      <Text className="text-center py-2">g</Text>
+                    </TouchableOpacity>
+                    <View className="h-px bg-gray-800 w-full opacity-50" />
+                    <TouchableOpacity
+                      className="bg-white"
+                      onPress={() => handleUnit("mg")}
+                    >
+                      <Text className="text-center py-2">mg</Text>
+                    </TouchableOpacity>
+                    <View className="h-px bg-gray-800 w-full opacity-50" />
+                    <TouchableOpacity
+                      className="bg-white px-2"
+                      onPress={() => handleUnit("oz")}
+                    >
+                      <Text className="text-center py-2">oz</Text>
+                    </TouchableOpacity>
+                    <View className="h-px bg-gray-800 w-full opacity-50" />
+                    <TouchableOpacity
+                      className="bg-white"
+                      onPress={() => handleUnit("ml")}
+                    >
+                      <Text className="text-center py-2">ml</Text>
+                    </TouchableOpacity>
+                    <View className="h-px bg-gray-800 w-full opacity-50" />
+                    <TouchableOpacity
+                      className="bg-white"
+                      onPress={() => handleUnit("l")}
+                    >
+                      <Text className="text-center py-2">l</Text>
+                    </TouchableOpacity>
+                  </View>
+                </View>
+              </View>
+            </View>
+          </Menu>
           <Text className="mr-2">C: {fridge_item.carbohydrates}g</Text>
           <Text className="mr-2">P: {fridge_item.protein}g</Text>
           <Text className="mr-2">F: {fridge_item.fat_total}g</Text>

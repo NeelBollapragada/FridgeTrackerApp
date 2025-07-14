@@ -12,7 +12,14 @@ import { Icon } from "react-native-paper";
 import { getDB, readFoodItemDB } from "../../services/sqlite";
 import AddFoodCard from "./AddFoodCard";
 
-const AddFoodModal = ({ modalVisible, setModalVisible }) => {
+const AddFoodModal = ({
+  modalVisible,
+  setModalVisible,
+  fridgeData,
+  setFridgeData,
+  filteredData,
+  setFilteredData,
+}) => {
   const [database, setDatabase] = useState(null);
   const [query, setQuery] = useState([]);
 
@@ -89,7 +96,14 @@ const AddFoodModal = ({ modalVisible, setModalVisible }) => {
             <FlatList
               data={query}
               renderItem={({ item }) => (
-                <AddFoodCard food_item={item} db={database} />
+                <AddFoodCard
+                  food_item={item}
+                  db={database}
+                  fridgeData={fridgeData}
+                  setFridgeData={setFridgeData}
+                  filteredData={filteredData}
+                  setFilteredData={setFilteredData}
+                />
               )}
               ListFooterComponent={
                 <TouchableOpacity className="mt-5 mb-12 mx-auto">

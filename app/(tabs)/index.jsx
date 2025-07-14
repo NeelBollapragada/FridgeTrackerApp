@@ -50,6 +50,10 @@ const Index = () => {
         <AddFoodModal
           modalVisible={modalVisible}
           setModalVisible={setModalVisible}
+          fridgeData={fridgeData}
+          setFridgeData={setFridgeData}
+          filteredData={filteredData}
+          setFilteredData={setFilteredData}
         />
       )}
       {fridgeData.length === 0 ? (
@@ -69,6 +73,7 @@ const Index = () => {
               setFilteredData={setFilteredData}
             />
           )}
+          keyExtractor={(item) => item.id}
           ListFooterComponent={<View className="h-32" />}
         />
       )}

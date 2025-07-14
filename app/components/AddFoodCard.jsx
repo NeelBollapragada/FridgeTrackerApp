@@ -1,9 +1,20 @@
 import { Image, StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import { insertFridgeItem } from "../../services/sqlite";
 
-const AddFoodCard = ({ food_item, db }) => {
+const AddFoodCard = ({
+  food_item,
+  db,
+  fridgeData,
+  setFridgeData,
+  filteredData,
+  setFilteredData,
+}) => {
   const handleAdd = async () => {
-    await insertFridgeItem(db, food_item);
+    const newItem = await insertFridgeItem(db, food_item);
+    const currData = [...fridgeData, newItem[0]];
+    setFridgeData(currData);
+    const currQuery = [...filteredData, newItem[0]];
+    setFilteredData(currQuery);
   };
 
   return (
