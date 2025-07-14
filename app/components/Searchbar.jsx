@@ -1,11 +1,22 @@
+import { useState } from "react";
 import { StyleSheet, TextInput, View } from "react-native";
 import { Icon } from "react-native-paper";
 
-const Searchbar = () => {
+const Searchbar = ({ fridgeData, setFilteredData }) => {
+  const [input, setInput] = useState("");
+
   return (
     <View className="bg-gray-400 rounded-full flex-row justify-between w-[80%]">
       <TextInput
         placeholder="Search"
+        value={input}
+        onChangeText={(newInput) => {
+          setInput(newInput.toLowerCase());
+          const query = fridgeData.filter((item) =>
+            item.name.toLowerCase().includes(newInput.toLowerCase())
+          );
+          setFilteredData(query);
+        }}
         className="flex-1 ml-3"
         placeholderTextColor="#222937"
       />

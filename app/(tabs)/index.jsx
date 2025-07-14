@@ -15,6 +15,7 @@ const Index = () => {
   const [modalVisible, setModalVisible] = useState(false);
   const [database, setDatabase] = useState(null);
   const [fridgeData, setFridgeData] = useState([]);
+  const [filteredData, setFilteredData] = useState([]);
 
   useEffect(() => {
     const init = async () => {
@@ -29,6 +30,7 @@ const Index = () => {
       if (!database) return;
       const results = await readFridgeDB(database);
       setFridgeData(results);
+      setFilteredData(results);
     };
     readData();
   }, [database]);
@@ -36,7 +38,7 @@ const Index = () => {
   return (
     <View className="flex-1 bg-[#f2f2f2]">
       <View className="bg-white py-2 px-3 flex-row shadow-xl">
-        <Searchbar />
+        <Searchbar fridgeData={fridgeData} setFilteredData={setFilteredData} />
         <TouchableOpacity
           className="bg-blue-500 w-[18%] ml-2 items-center justify-center rounded-xl"
           onPress={() => setModalVisible(true)}
@@ -56,8 +58,15 @@ const Index = () => {
         </View>
       ) : (
         <FlatList
-          data={fridgeData}
-          renderItem={({ item }) => <FridgeCard fridge_item={item} />}
+          data={filteredData}
+          renderItem={({ item }) => (
+            <FridgeCard
+              fridge_item={item}
+              db={database}
+              fridgeData={fridgeData}
+              setFridgeData={setFridgeData}
+            />
+          )}
           ListFooterComponent={<View className="h-32" />}
         />
       )}
