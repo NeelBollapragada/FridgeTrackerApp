@@ -232,8 +232,9 @@ const FridgeCard = ({
       <DateTimePickerModal
         isVisible={datePickerVisible}
         mode="date"
-        onConfirm={(date) => handleDate(date.toISOString())}
+        onConfirm={(date) => handleDate(date)}
         onCancel={() => setDatePickerVisible(false)}
+        minimumDate={new Date()}
       />
     </View>
   );
