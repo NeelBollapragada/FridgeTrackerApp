@@ -163,3 +163,14 @@ export const updateFridgeUnitDB = async (db, id, newUnit) => {
     console.error("11", error);
   }
 };
+
+export const updateFridgeExpiryDB = async (db, id, newDate) => {
+  try {
+    await db.runAsync("UPDATE fridge_items SET expiry_date = ? WHERE id = ?", [
+      newDate,
+      id,
+    ]);
+  } catch (error) {
+    console.error("12", error);
+  }
+};

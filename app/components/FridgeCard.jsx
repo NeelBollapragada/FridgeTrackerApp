@@ -12,6 +12,7 @@ import DateTimePickerModal from "react-native-modal-datetime-picker";
 import { Icon, Menu } from "react-native-paper";
 import {
   deleteFridgeItemDB,
+  updateFridgeExpiryDB,
   updateFridgeQuantityDB,
   updateFridgeUnitDB,
 } from "../../services/sqlite";
@@ -72,10 +73,11 @@ const FridgeCard = ({
     await updateFridgeUnitDB(db, fridge_item.id, newUnit);
   };
 
-  const handleDate = (newDate) => {
+  const handleDate = async (newDate) => {
     const expires = newDate.slice(0, 10).split("-").reverse().join("/");
 
     fridge_item.expiry_date = expires;
+    await updateFridgeExpiryDB(db, fridge_item.id, expires);
     setDatePickerVisible(false);
   };
   return (
