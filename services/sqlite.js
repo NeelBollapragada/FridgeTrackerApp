@@ -174,3 +174,15 @@ export const updateFridgeExpiryDB = async (db, id, newDate) => {
     console.error("12", error);
   }
 };
+
+export const readFoodItemSpecificDB = async (db, searchQuery, lim) => {
+  try {
+    const results = await db.getAllAsync(
+      `SELECT * FROM food_items WHERE name LIKE ? LIMIT ${lim}`,
+      [`%${searchQuery}%`]
+    );
+    return results;
+  } catch (error) {
+    console.error("13", error);
+  }
+};
