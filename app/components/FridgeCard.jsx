@@ -27,6 +27,8 @@ const FridgeCard = ({
 }) => {
   const [visible, setVisible] = useState(false);
   const [quantity, setQuantity] = useState(1);
+  const [quantityInput, setQuantityInput] = useState("");
+  const [useInput, setUseInput] = useState(false);
   const [unit, setUnit] = useState("");
   const [datePickerVisible, setDatePickerVisible] = useState(false);
 
@@ -133,7 +135,16 @@ const FridgeCard = ({
         </View>
         <Menu
           visible={visible}
-          onDismiss={() => setVisible(false)}
+          onDismiss={() => {
+            if (useInput) {
+              const value = parseFloat(quantityInput);
+              if (!isNaN(value)) {
+                handleQuantity(value);
+              }
+            }
+            setUseInput(false);
+            setVisible(false);
+          }}
           anchor={
             <Text className="">Energy: {fridge_item.energy_kcal} kcal</Text>
           }
@@ -148,6 +159,11 @@ const FridgeCard = ({
             <TextInput
               placeholder="quantity"
               placeholderTextColor="#c0c0c0"
+              value={quantityInput}
+              onChangeText={(text) => {
+                setQuantityInput(text);
+                setUseInput(true);
+              }}
               className="text-black border border-gray-900 h-auto mb-2"
               style={{ textAlignVertical: "top" }}
               keyboardType="numeric"
@@ -156,42 +172,66 @@ const FridgeCard = ({
               <View className="bg-white">
                 <TouchableOpacity
                   className="bg-white"
-                  onPress={() => handleQuantity(1)}
+                  onPress={() => {
+                    handleQuantity(1);
+                    setUseInput(false);
+                    setQuantityInput("");
+                  }}
                 >
                   <Text className="text-center pb-2">1</Text>
                 </TouchableOpacity>
                 <View className="h-px bg-gray-800 w-full opacity-50" />
                 <TouchableOpacity
                   className="bg-white"
-                  onPress={() => handleQuantity(2)}
+                  onPress={() => {
+                    handleQuantity(2);
+                    setUseInput(false);
+                    setQuantityInput("");
+                  }}
                 >
                   <Text className="text-center py-2">2</Text>
                 </TouchableOpacity>
                 <View className="h-px bg-gray-800 w-full opacity-50" />
                 <TouchableOpacity
                   className="bg-white"
-                  onPress={() => handleQuantity(5)}
+                  onPress={() => {
+                    handleQuantity(5);
+                    setUseInput(false);
+                    setQuantityInput("");
+                  }}
                 >
                   <Text className="text-center py-2">5</Text>
                 </TouchableOpacity>
                 <View className="h-px bg-gray-800 w-full opacity-50" />
                 <TouchableOpacity
                   className="bg-white px-2"
-                  onPress={() => handleQuantity(100)}
+                  onPress={() => {
+                    handleQuantity(100);
+                    setUseInput(false);
+                    setQuantityInput("");
+                  }}
                 >
                   <Text className="text-center py-2">100</Text>
                 </TouchableOpacity>
                 <View className="h-px bg-gray-800 w-full opacity-50" />
                 <TouchableOpacity
                   className="bg-white"
-                  onPress={() => handleQuantity(200)}
+                  onPress={() => {
+                    handleQuantity(200);
+                    setUseInput(false);
+                    setQuantityInput("");
+                  }}
                 >
                   <Text className="text-center py-2">200</Text>
                 </TouchableOpacity>
                 <View className="h-px bg-gray-800 w-full opacity-50" />
                 <TouchableOpacity
                   className="bg-white"
-                  onPress={() => handleQuantity(400)}
+                  onPress={() => {
+                    handleQuantity(400);
+                    setUseInput(false);
+                    setQuantityInput("");
+                  }}
                 >
                   <Text className="text-center py-2">400</Text>
                 </TouchableOpacity>
