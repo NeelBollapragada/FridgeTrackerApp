@@ -9,7 +9,11 @@ import {
   View,
 } from "react-native";
 import { Icon } from "react-native-paper";
-import { getDB, readFoodItemDB } from "../../services/sqlite";
+import {
+  getDB,
+  readFoodItemDB,
+  readFoodItemSpecificDB,
+} from "../../services/sqlite";
 import AddFoodCard from "./AddFoodCard";
 
 const AddFoodModal = ({
@@ -22,6 +26,7 @@ const AddFoodModal = ({
 }) => {
   const [database, setDatabase] = useState(null);
   const [query, setQuery] = useState([]);
+  const [text, setText] = useState("");
 
   const [newFood, setNewFood] = useState(false);
 
@@ -41,6 +46,21 @@ const AddFoodModal = ({
     };
     changeQuery();
   }, [database]);
+
+  useEffect(() => {
+    const timeoutId = setTimeout(async () => {
+      if (!database) return;
+      if (text.trim()) {
+        const results = await readFoodItemSpecificDB(database, text, 20);
+        setQuery(results);
+      } else {
+        const results = await readFoodItemDB(database, 20);
+        setQuery(results);
+      }
+    }, 300);
+
+    return () => clearTimeout(timeoutId);
+  }, [text]);
 
   return (
     <Modal
@@ -65,6 +85,8 @@ const AddFoodModal = ({
             <TextInput
               placeholder="Search..."
               placeholderTextColor="#9ca3af"
+              value={text}
+              onChangeText={setText}
               className="ml-4 text-white flex-1"
             />
             <TouchableOpacity className="my-auto mx-4">
