@@ -140,9 +140,17 @@ const AddFoodModal = ({
                   <Text className="text-gray-500 italic">(optional)</Text>
                 </View>
                 <View className="flex-col px-4">
-                  <View className="flex-row items-center">
+                  <View className="flex-row items-center mt-2 px-2">
+                    <Text className="text-gray-200">Protein: </Text>
+                    <TextInput className="border border-width-[1px] border-gray-200 text-white rounded-md h-8 py-0 w-24" />
+                  </View>
+                  <View className="flex-row items-center mt-2 px-2">
                     <Text className="text-gray-200">Carbohydrates: </Text>
-                    <TextInput className="border border-width-[1px] border-gray-200 flex-1 text-white rounded-md h-8 py-0" />
+                    <TextInput className="border border-width-[1px] border-gray-200 text-white rounded-md h-8 py-0 w-24" />
+                  </View>
+                  <View className="flex-row items-center mt-2 px-2">
+                    <Text className="text-gray-200">Fat: </Text>
+                    <TextInput className="border border-width-[1px] border-gray-200 text-white rounded-md h-8 py-0 w-24" />
                   </View>
                 </View>
               </View>
