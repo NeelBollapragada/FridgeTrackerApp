@@ -146,7 +146,11 @@ const FridgeCard = ({
             setVisible(false);
           }}
           anchor={
-            <Text className="">Energy: {fridge_item.energy_kcal} kcal</Text>
+            fridge_item.energy_kcal ? (
+              <Text className="">Energy: {fridge_item.energy_kcal} kcal</Text>
+            ) : (
+              <Text className="text-[#f2f2f2]">Energy</Text>
+            )
           }
           style={{
             backgroundColor: "transparent",
@@ -286,14 +290,26 @@ const FridgeCard = ({
           </View>
         </Menu>
         <View className="flex-row">
-          <Text className="mr-3 text-gray-600">Macros:</Text>
-          <Text className="mr-2 text-gray-600">
-            C: {fridge_item.carbohydrates}g
-          </Text>
-          <Text className="mr-2 text-gray-600">P: {fridge_item.protein}g</Text>
-          <Text className="mr-2 text-gray-600">
-            F: {fridge_item.fat_total}g
-          </Text>
+          {(fridge_item.carbohydrates != null ||
+            fridge_item.protein != null ||
+            fridge_item.fat_total != null) && (
+            <Text className="mr-3 text-gray-600">Macros:</Text>
+          )}
+          {fridge_item.carbohydrates != null && (
+            <Text className="mr-2 text-gray-600">
+              C: {fridge_item.carbohydrates}g
+            </Text>
+          )}
+          {fridge_item.protein != null && (
+            <Text className="mr-2 text-gray-600">
+              P: {fridge_item.protein}g
+            </Text>
+          )}
+          {fridge_item.fat_total != null && (
+            <Text className="mr-2 text-gray-600">
+              F: {fridge_item.fat_total}g
+            </Text>
+          )}
         </View>
       </View>
       <DateTimePickerModal
