@@ -206,15 +206,17 @@ export const insertFoodItemDB = async (db, foodItem) => {
       "INSERT INTO food_items (code, name, image_url, energy_kcal, protein, carbohydrates, fat_total, fat_saturated, fat_unsaturated) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)",
       [
         foodItem.code,
-        foodItem.code,
+        foodItem.name,
         foodItem.image_url,
         foodItem.energy_kcal,
         foodItem.protein,
         foodItem.carbohydrates,
         foodItem.fat_total,
-        NaN,
-        NaN,
+        null,
+        null,
       ]
     );
-  } catch (error) {}
+  } catch (error) {
+    console.error("15", error);
+  }
 };
