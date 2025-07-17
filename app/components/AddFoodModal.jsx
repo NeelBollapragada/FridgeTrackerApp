@@ -131,9 +131,19 @@ const AddFoodModal = ({
                 Create New Food Item
               </Text>
               <View>
-                <View className="flex-row">
+                <View className="flex-row mt-10 px-4 items-center">
                   <Text className="text-gray-200">Name: </Text>
-                  <TextInput className="border border-width-[1px] border-gray-200 flex-1 text-white" />
+                  <TextInput className="border border-width-[1px] border-gray-200 flex-1 text-white rounded-md h-8 py-0" />
+                </View>
+                <View className="flex-row mt-8 px-4">
+                  <Text className="text-gray-200">Macros: </Text>
+                  <Text className="text-gray-500 italic">(optional)</Text>
+                </View>
+                <View className="flex-col px-4">
+                  <View className="flex-row items-center">
+                    <Text className="text-gray-200">Carbohydrates: </Text>
+                    <TextInput className="border border-width-[1px] border-gray-200 flex-1 text-white rounded-md h-8 py-0" />
+                  </View>
                 </View>
               </View>
             </>

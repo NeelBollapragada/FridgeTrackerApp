@@ -168,8 +168,7 @@ const FridgeCard = ({
                 setQuantityInput(text);
                 setUseInput(true);
               }}
-              className="text-black border border-gray-900 h-auto mb-2"
-              style={{ textAlignVertical: "top" }}
+              className="text-black border border-gray-900 mb-2 h-8 py-0"
               keyboardType="numeric"
             />
             <View className="flex-row">
