@@ -186,3 +186,35 @@ export const readFoodItemSpecificDB = async (db, searchQuery, lim) => {
     console.error("13", error);
   }
 };
+
+export const checkFoodItemDB = async (db, code) => {
+  try {
+    const results = await db.getAllAsync(
+      `SELECT * FROM food_items WHERE code = ? LIMIT 1`,
+      [code]
+    );
+
+    return results.length > 0;
+  } catch (error) {
+    console.error("14", error);
+  }
+};
+
+export const insertFoodItemDB = async (db, foodItem) => {
+  try {
+    await db.runAsync(
+      "INSERT INTO food_items (code, name, image_url, energy_kcal, protein, carbohydrates, fat_total, fat_saturated, fat_unsaturated) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)",
+      [
+        foodItem.code,
+        foodItem.code,
+        foodItem.image_url,
+        foodItem.energy_kcal,
+        foodItem.protein,
+        foodItem.carbohydrates,
+        foodItem.fat_total,
+        NaN,
+        NaN,
+      ]
+    );
+  } catch (error) {}
+};
