@@ -38,7 +38,11 @@ const AddFoodCard = memo(
           onPress={handleAdd}
         >
           <Image
-            source={{ uri: food_item.image_url }}
+            source={
+              food_item.image_url !== ""
+                ? { uri: food_item.image_url }
+                : undefined
+            }
             className="w-20 h-20 bg-slate-500 rounded-md"
             resizeMode="contain"
             onError={() =>

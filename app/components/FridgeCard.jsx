@@ -105,7 +105,11 @@ const FridgeCard = ({
   return (
     <View className="flex-row border border-gray-500 border-[2px] rounded-lg m-2">
       <Image
-        source={{ uri: fridge_item.image_url }}
+        source={
+          fridge_item.image_url !== ""
+            ? { uri: fridge_item.image_url }
+            : undefined
+        }
         className="w-32 h-32 rounded-lg bg-gray-300"
         resizeMode="contain"
       />
