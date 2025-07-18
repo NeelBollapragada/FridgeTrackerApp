@@ -38,6 +38,20 @@ export default function RootLayout() {
     <PaperProvider theme={customTheme}>
       <Stack>
         <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
+        <Stack.Screen
+          name="scan/scanner"
+          options={{
+            title: "Scanner",
+            headerShadowVisible: false,
+            headerStyle: {
+              backgroundColor: "#000030",
+            },
+            headerTitleStyle: {
+              color: "#fff",
+            },
+            headerTintColor: "#fff",
+          }}
+        />
       </Stack>
     </PaperProvider>
   );
