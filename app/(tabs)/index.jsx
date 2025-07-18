@@ -34,7 +34,7 @@ const Index = () => {
       headerRight: () => (
         <TouchableOpacity
           className="mr-6"
-          onPress={router.push("./scan/scanner")}
+          onPress={() => router.push("./scan/scanner")}
         >
           <Icon source="barcode-scan" color="#000" size={30} />
         </TouchableOpacity>
