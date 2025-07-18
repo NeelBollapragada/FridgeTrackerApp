@@ -1,4 +1,5 @@
-import { useEffect, useState } from "react";
+import { useNavigation, useRouter } from "expo-router";
+import { useEffect, useLayoutEffect, useState } from "react";
 import {
   FlatList,
   StyleSheet,
@@ -6,12 +7,15 @@ import {
   TouchableOpacity,
   View,
 } from "react-native";
+import { Icon } from "react-native-paper";
 import { getDB, readFridgeDB } from "../../services/sqlite";
 import AddFoodModal from "../components/AddFoodModal";
 import FridgeCard from "../components/FridgeCard";
 import Searchbar from "../components/Searchbar";
 
 const Index = () => {
+  const navigation = useNavigation();
+  const router = useRouter();
   const [modalVisible, setModalVisible] = useState(false);
   const [database, setDatabase] = useState(null);
   const [fridgeData, setFridgeData] = useState([]);
@@ -24,6 +28,19 @@ const Index = () => {
     };
     init();
   }, []);
+
+  useLayoutEffect(() => {
+    navigation.setOptions({
+      headerRight: () => (
+        <TouchableOpacity
+          className="mr-6"
+          onPress={router.push("./scan/scanner")}
+        >
+          <Icon source="barcode-scan" color="#000" size={30} />
+        </TouchableOpacity>
+      ),
+    });
+  }, [navigation]);
 
   useEffect(() => {
     const readData = async () => {
