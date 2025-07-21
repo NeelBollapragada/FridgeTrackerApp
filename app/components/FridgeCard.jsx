@@ -30,6 +30,7 @@ const FridgeCard = ({
   const [quantityInput, setQuantityInput] = useState("");
   const [useInput, setUseInput] = useState(false);
   const [unit, setUnit] = useState("");
+  const [expiry, setExpiry] = useState("");
   const [datePickerVisible, setDatePickerVisible] = useState(false);
 
   const handleClose = () => {
@@ -61,6 +62,7 @@ const FridgeCard = ({
   useEffect(() => {
     setQuantity(fridge_item.quantity);
     setUnit(fridge_item.unit);
+    setExpiry(dayExpiry(fridge_item.expiry_date));
   }, []);
 
   const handleQuantity = async (newQuantity) => {
@@ -84,6 +86,7 @@ const FridgeCard = ({
       .join("/");
 
     fridge_item.expiry_date = expires;
+    setExpiry(dayExpiry(expires));
     await updateFridgeExpiryDB(db, fridge_item.id, expires);
     setDatePickerVisible(false);
   };
@@ -93,12 +96,56 @@ const FridgeCard = ({
       expiry.split("/").reverse().join("-")
     ).getTime();
     const current = new Date().getTime();
+
+    if (expiry_date < current - 86400000) {
+      return "expired";
+    }
+
     if (expiry_date < current + 86400000 * 2) {
       return "red";
     } else if (expiry_date < current + 86400000 * 5) {
       return "yellow";
     } else {
       return "green";
+    }
+  };
+
+  const dayExpiry = (expiry) => {
+    const current = new Date();
+
+    const days = {
+      0: "Sunday",
+      1: "Monday",
+      2: "Tuesday",
+      3: "Wednesday",
+      4: "Thursday",
+      5: "Friday",
+      6: "Saturday",
+    };
+
+    const expiryDate = expiry.split("/").reverse().join("-");
+    const checkingDate = new Date(expiryDate);
+
+    if (checkingDate.getTime() < current.getTime() - 86400000) {
+      return "Expired";
+    }
+
+    if (
+      current.getTime() >= checkingDate.getTime() &&
+      current.getTime() <= checkingDate.getTime() + 86400000
+    ) {
+      return "Today";
+    } else if (
+      current.getTime() + 86400000 >= checkingDate.getTime() &&
+      current.getTime() <= checkingDate.getTime()
+    ) {
+      return "Tomorrow";
+    }
+
+    if (checkingDate.getTime() - current.getTime() > 86400000 * 6) {
+      return expiry;
+    } else {
+      return days[checkingDate.getDay()];
     }
   };
 
@@ -127,14 +174,25 @@ const FridgeCard = ({
             <Text className="mr-2">{`Quantity: ${fridge_item.quantity} ${fridge_item.unit}`}</Text>
           </TouchableOpacity>
           <TouchableOpacity
-            className={`border border-[1px] rounded-full ${fridge_item.expiry_date === "" ? "mr-16" : "mr-4"} ${fridge_item.expiry_date !== "" ? (checkExpiry(fridge_item.expiry_date) === "red" ? "border-red-950 bg-red-300" : checkExpiry(fridge_item.expiry_date) === "yellow" ? "border-amber-950 bg-amber-100" : "border-green-950 bg-green-300") : "border-gray-500"}`}
+            className={`border border-[1px] rounded-full ${fridge_item.expiry_date === "" ? "mr-16" : "mr-4 w-[54%]"} ${fridge_item.expiry_date !== "" ? (checkExpiry(fridge_item.expiry_date) === "red" ? "border-red-950 bg-red-300" : checkExpiry(fridge_item.expiry_date) === "yellow" ? "border-amber-950 bg-amber-100" : checkExpiry(fridge_item.expiry_date) === "expired" ? "border-orange-950 bg-orange-300" : "border-green-950 bg-green-300") : "border-gray-500"}`}
             onPress={() => setDatePickerVisible(true)}
           >
-            <Text className="px-3 py-1">
-              {fridge_item.expiry_date === ""
-                ? "Add Expiry"
-                : `Expires: ${fridge_item.expiry_date}`}
-            </Text>
+            {fridge_item.expiry_date === "" ? (
+              <Text className="px-3 py-1">Add Expiry</Text>
+            ) : (
+              <View className="flex-row px-3 py-1">
+                <Text>Expires: </Text>
+                <Text
+                  className={
+                    expiry === "Today" || expiry === "Expired"
+                      ? "font-bold"
+                      : ""
+                  }
+                >
+                  {expiry}
+                </Text>
+              </View>
+            )}
           </TouchableOpacity>
         </View>
         <Menu
