@@ -1,8 +1,11 @@
 import { CameraView, useCameraPermissions } from "expo-camera";
+import { useState } from "react";
 import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
+import { barcodeSearch } from "../../services/openFood";
 
 const scanner = () => {
   const [permission, requestPermission] = useCameraPermissions();
+  const [scanned, setScanned] = useState(false);
 
   if (!permission) {
     return <View className="flex-1 bg-[#000030]" />;
@@ -21,10 +24,26 @@ const scanner = () => {
     );
   }
 
+  const handleBarcode = async ({ data }) => {
+    if (scanned) return;
+    setScanned(true);
+
+    const food = await barcodeSearch(data);
+    if (food) {
+    }
+  };
+
   if (permission.granted) {
     return (
       <View className="flex-1 bg-[#000030]">
-        <CameraView style={styles.camera} facing="back" />
+        <CameraView
+          style={styles.camera}
+          facing="back"
+          barcodeScannerSettings={{
+            barcodeTypes: ["ean13", "ean8", "upc_a", "upc_e"],
+          }}
+          onBarcodeScanned={handleBarcode}
+        />
       </View>
     );
   }
