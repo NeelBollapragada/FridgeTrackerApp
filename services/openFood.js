@@ -49,3 +49,44 @@ export const searchFood = async (searchTerm) => {
     return [];
   }
 };
+
+export const barcodeSearch = async (barcode) => {
+  try {
+    const results = await fetch(
+      `https://world.openfoodfacts.net/api/v2/product/${barcode}`
+    );
+    const data = await results.json();
+
+    if (data.status !== 1) {
+      return null;
+    } else {
+      const product = data.product;
+      const item = {
+        code: product.code,
+        name: product.product_name,
+        image_url: product.image_front_url || null,
+        energy_kcal:
+          product.nutriments["energy-kcal"] ??
+          product.nutriments["energy-kcal_100g"] ??
+          null,
+        protein:
+          product.nutriments.proteins ??
+          product.nutriments.proteins_100g ??
+          product.nutriments.proteins_value ??
+          null,
+        carbohydrates:
+          product.nutriments.carbohydrates ??
+          product.nutriments.carbohydrates_100g ??
+          product.nutriments.carbohydrates_value ??
+          null,
+        fat_total:
+          product.nutriments.fat ??
+          product.nutriments.fat_100g ??
+          product.nutriments.fat_value ??
+          null,
+      };
+
+      return item;
+    }
+  } catch (error) {}
+};
