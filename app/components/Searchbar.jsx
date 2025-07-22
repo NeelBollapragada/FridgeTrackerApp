@@ -11,7 +11,7 @@ const Searchbar = ({ fridgeData, setFilteredData }) => {
         placeholder="Search"
         value={input}
         onChangeText={(newInput) => {
-          setInput(newInput.toLowerCase());
+          setInput(newInput.trim().toLowerCase());
           const query = fridgeData.filter((item) =>
             item.name.toLowerCase().includes(newInput.toLowerCase())
           );
