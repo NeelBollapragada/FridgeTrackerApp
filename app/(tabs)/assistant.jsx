@@ -1,14 +1,17 @@
+import { useState } from "react";
 import {
   FlatList,
   KeyboardAvoidingView,
   Platform,
   StyleSheet,
-  Text,
   View,
 } from "react-native";
+import ChatMessage from "../components/ChatMessage";
 import Promptbox from "../components/Promptbox";
 
 const Assistant = () => {
+  const [chats, setChats] = useState([]);
+
   return (
     <KeyboardAvoidingView
       style={{ flex: 1 }}
@@ -17,14 +20,12 @@ const Assistant = () => {
     >
       <View className="flex-1 justify-end bg-[#000022]">
         <FlatList
-          data={["test", "test2", "test3", "test4", "test5", "test6"]}
-          renderItem={({ item }) => (
-            <Text className="text-white text-6xl mb-8">{item}</Text>
-          )}
+          data={chats}
+          renderItem={({ item }) => <ChatMessage message={item} />}
           keyExtractor={(item, index) => index.toString()}
           className="flex-1 mb-4"
         />
-        <Promptbox />
+        <Promptbox chats={chats} setChats={setChats} />
         <View className="h-4" />
       </View>
     </KeyboardAvoidingView>
