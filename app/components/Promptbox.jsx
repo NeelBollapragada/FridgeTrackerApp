@@ -17,7 +17,7 @@ const Promptbox = ({ chats, setChats }) => {
     setChats(
       chats.concat([
         {
-          role: "user",
+          role: "error",
           content: input,
         },
       ])
