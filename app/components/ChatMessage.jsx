@@ -22,7 +22,9 @@ const ChatMessage = ({ message }) => {
 
   return (
     <View className="w-[80%] h-auto border border-slate-500 rounded-xl mt-6 ml-6">
-      <Text className="text-white px-4 py-3">{message.content}</Text>
+      <Text className="text-white text-justify leading-6 tracking-wide px-4 py-3">
+        {message.content}
+      </Text>
     </View>
   );
 };

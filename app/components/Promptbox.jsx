@@ -7,23 +7,49 @@ import {
   View,
 } from "react-native";
 import { Icon } from "react-native-paper";
+import { aiChat } from "../../services/openRouter";
 
-const Promptbox = ({ chats, setChats }) => {
+const Promptbox = ({ setChats }) => {
   const [input, setInput] = useState("");
 
-  const handleInput = () => {
+  const handleInput = async () => {
     if (input.trim() === "") return;
 
-    setChats(
+    const newChat = input.trim();
+
+    setChats((chats) =>
       chats.concat([
         {
-          role: "error",
-          content: input,
+          role: "user",
+          content: newChat,
         },
       ])
     );
     setInput("");
     Keyboard.dismiss();
+
+    const response = await aiChat(newChat);
+
+    console.log(response);
+
+    if (response) {
+      setChats((chats) =>
+        chats.concat([
+          {
+            role: "assistant",
+            content: response.trim(),
+          },
+        ])
+      );
+    } else {
+      setChats((chats) =>
+        chats.concat([
+          {
+            role: "error",
+          },
+        ])
+      );
+    }
   };
 
   return (
