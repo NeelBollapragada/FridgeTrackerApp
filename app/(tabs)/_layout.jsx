@@ -46,6 +46,26 @@ const _layout = () => {
         }}
       />
       <Tabs.Screen
+        name="assistant"
+        options={{
+          title: "Recipe Assistant",
+          headerShown: true,
+          headerTitleStyle: {
+            marginLeft: 15,
+            color: "#fff",
+          },
+          headerStyle: {
+            backgroundColor: "#000022",
+            borderBottomColor: "#bfe1f5",
+            borderBottomWidth: 0.2,
+          },
+          headerShadowVisible: false,
+          tabBarIcon: ({ focused }) => (
+            <TabIcon focused={focused} icon="chef-hat" title="Chef" />
+          ),
+        }}
+      />
+      <Tabs.Screen
         name="list"
         options={{
           title: "Shopping List",
