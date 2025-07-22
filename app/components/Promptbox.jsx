@@ -1,12 +1,29 @@
 import { useState } from "react";
-import { StyleSheet, TextInput, TouchableOpacity, View } from "react-native";
+import {
+  Keyboard,
+  StyleSheet,
+  TextInput,
+  TouchableOpacity,
+  View,
+} from "react-native";
 import { Icon } from "react-native-paper";
 
-const Promptbox = () => {
+const Promptbox = ({ chats, setChats }) => {
   const [input, setInput] = useState("");
 
   const handleInput = () => {
     if (input.trim() === "") return;
+
+    setChats(
+      chats.concat([
+        {
+          role: "error",
+          content: input,
+        },
+      ])
+    );
+    setInput("");
+    Keyboard.dismiss();
   };
 
   return (
