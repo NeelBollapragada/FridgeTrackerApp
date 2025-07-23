@@ -1,4 +1,5 @@
 import { StyleSheet, Text, View } from "react-native";
+import Markdown from "react-native-markdown-display";
 
 const ChatMessage = ({ message }) => {
   if (message.role === "error") {
@@ -22,9 +23,21 @@ const ChatMessage = ({ message }) => {
 
   return (
     <View className="w-[80%] h-auto border border-slate-500 rounded-xl mt-6 ml-6">
-      <Text className="text-white text-justify leading-6 tracking-wide px-4 py-3">
+      <Markdown
+        style={{
+          body: {
+            color: "white",
+            fontSize: 14,
+            lineHeight: 22,
+            textAlign: "justify",
+            paddingHorizontal: 14,
+            paddingVertical: 4,
+            paddingBottom: 10,
+          },
+        }}
+      >
         {message.content}
-      </Text>
+      </Markdown>
     </View>
   );
 };

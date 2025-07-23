@@ -30,8 +30,6 @@ const Promptbox = ({ setChats }) => {
 
     const response = await aiChat(newChat);
 
-    console.log(response);
-
     if (response) {
       setChats((chats) =>
         chats.concat([
