@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import {
   FlatList,
   KeyboardAvoidingView,
@@ -7,12 +7,31 @@ import {
   View,
 } from "react-native";
 import { ActivityIndicator } from "react-native-paper";
+import { getDB, readChatsDB } from "../../services/sqlite";
 import ChatMessage from "../components/ChatMessage";
 import Promptbox from "../components/Promptbox";
 
 const Assistant = () => {
   const [chats, setChats] = useState([]);
   const [loading, setLoading] = useState(false);
+  const [database, setDatabase] = useState(null);
+
+  useEffect(() => {
+    const init = async () => {
+      const dbInstance = await getDB();
+      setDatabase(dbInstance);
+    };
+    init();
+  }, []);
+
+  useEffect(() => {
+    const readData = async () => {
+      if (!database) return;
+      const results = await readChatsDB(database);
+      setChats(results ?? []);
+    };
+    readData();
+  }, [database]);
 
   return (
     <KeyboardAvoidingView
@@ -36,7 +55,12 @@ const Assistant = () => {
           }
           className="flex-1 mb-4"
         />
-        <Promptbox setChats={setChats} setLoading={setLoading} />
+        <Promptbox
+          chats={chats}
+          setChats={setChats}
+          setLoading={setLoading}
+          db={database}
+        />
         <View className="h-4" />
       </View>
     </KeyboardAvoidingView>

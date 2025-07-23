@@ -49,6 +49,15 @@ export const setDB = async (db) => {
     unit TEXT
     )`
     );
+
+    await db.execAsync(
+      `CREATE TABLE IF NOT EXISTS assistant_chats (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      role TEXT NOT NULL,
+      content TEXT,
+      timestamp DATETIME DEFAULT CURRENT_TIMESTAMP
+      )`
+    );
   } catch (error) {
     console.error("2", error);
   }
@@ -218,5 +227,36 @@ export const insertFoodItemDB = async (db, foodItem) => {
     );
   } catch (error) {
     console.error("15", error);
+  }
+};
+
+export const readChatsDB = async (db) => {
+  try {
+    const results = await db.getAllAsync(
+      `SELECT role, content FROM assistant_chats ORDER BY timestamp ASC`
+    );
+    return results;
+  } catch (error) {
+    console.error("16", error);
+  }
+};
+
+export const insertChatDB = async (db, role, message) => {
+  try {
+    await db.runAsync(
+      "INSERT INTO assistant_chats (role, content) VALUES (?, ?)",
+      [role, message]
+    );
+  } catch (error) {
+    console.error("17", error);
+  }
+};
+
+export const tableLayout = async (db) => {
+  try {
+    const results = await db.getAllAsync("PRAGMA table_info(assistant_chats)");
+    console.log("table info", results);
+  } catch (error) {
+    console.error("table info error: ", error);
   }
 };
