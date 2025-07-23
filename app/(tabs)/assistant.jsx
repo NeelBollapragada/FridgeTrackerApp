@@ -6,11 +6,13 @@ import {
   StyleSheet,
   View,
 } from "react-native";
+import { ActivityIndicator } from "react-native-paper";
 import ChatMessage from "../components/ChatMessage";
 import Promptbox from "../components/Promptbox";
 
 const Assistant = () => {
   const [chats, setChats] = useState([]);
+  const [loading, setLoading] = useState(false);
 
   return (
     <KeyboardAvoidingView
@@ -23,9 +25,18 @@ const Assistant = () => {
           data={chats}
           renderItem={({ item }) => <ChatMessage message={item} />}
           keyExtractor={(item, index) => index.toString()}
+          ListFooterComponent={
+            loading ? (
+              <View className="items-start mv-6 ml-6">
+                <ActivityIndicator animating color="#64748b" />
+              </View>
+            ) : (
+              <View className="h-12" />
+            )
+          }
           className="flex-1 mb-4"
         />
-        <Promptbox chats={chats} setChats={setChats} />
+        <Promptbox setChats={setChats} setLoading={setLoading} />
         <View className="h-4" />
       </View>
     </KeyboardAvoidingView>

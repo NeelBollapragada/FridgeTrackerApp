@@ -9,7 +9,7 @@ import {
 import { Icon } from "react-native-paper";
 import { aiChat } from "../../services/openRouter";
 
-const Promptbox = ({ setChats }) => {
+const Promptbox = ({ setChats, setLoading }) => {
   const [input, setInput] = useState("");
 
   const handleInput = async () => {
@@ -27,6 +27,8 @@ const Promptbox = ({ setChats }) => {
     );
     setInput("");
     Keyboard.dismiss();
+
+    setLoading(true);
 
     const response = await aiChat(newChat);
 
@@ -48,6 +50,8 @@ const Promptbox = ({ setChats }) => {
         ])
       );
     }
+
+    setLoading(false);
   };
 
   return (
