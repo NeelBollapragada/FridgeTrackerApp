@@ -1,3 +1,4 @@
+import AsyncStorage from "@react-native-async-storage/async-storage";
 import * as SQLite from "expo-sqlite";
 
 let dbInstance = null;
@@ -58,6 +59,14 @@ export const setDB = async (db) => {
       timestamp DATETIME DEFAULT CURRENT_TIMESTAMP
       )`
     );
+
+    const today = new Date().toISOString().split("T")[0];
+    const lastReset = await AsyncStorage.getItem("lastChatsResetDate");
+
+    if (today !== lastReset) {
+      await clearChatsDB(db);
+      await AsyncStorage.setItem("lastChatsResetDate", today);
+    }
   } catch (error) {
     console.error("2", error);
   }
@@ -258,5 +267,13 @@ export const tableLayout = async (db) => {
     console.log("table info", results);
   } catch (error) {
     console.error("table info error: ", error);
+  }
+};
+
+export const clearChatsDB = async (db) => {
+  try {
+    await db.runAsync(`DELETE FROM assistant_chats`);
+  } catch (error) {
+    console.error("18", error);
   }
 };
