@@ -1,6 +1,7 @@
 const AI_API_KEY = process.env.EXPO_PUBLIC_OPENROUTER_API_KEY;
 
-export const aiChat = async (prompt) => {
+export const aiChat = async (prompt, chatHistory) => {
+  const recentChats = chatHistory.slice(-4);
   try {
     const results = await fetch(
       "https://openrouter.ai/api/v1/chat/completions",
@@ -18,6 +19,7 @@ export const aiChat = async (prompt) => {
               content:
                 "You are a helpful and friendly recipe assistant. You only answer questions related to food, meals, and cooking. If a question is unrelated to food or recipes, politely respond that you can only help with cooking related questions.",
             },
+            ...recentChats,
             {
               role: "user",
               content: prompt,

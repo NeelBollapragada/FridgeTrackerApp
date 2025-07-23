@@ -8,8 +8,9 @@ import {
 } from "react-native";
 import { Icon } from "react-native-paper";
 import { aiChat } from "../../services/openRouter";
+import { insertChatDB } from "../../services/sqlite";
 
-const Promptbox = ({ setChats, setLoading }) => {
+const Promptbox = ({ chats, setChats, setLoading, db }) => {
   const [input, setInput] = useState("");
 
   const handleInput = async () => {
@@ -28,9 +29,11 @@ const Promptbox = ({ setChats, setLoading }) => {
     setInput("");
     Keyboard.dismiss();
 
+    await insertChatDB(db, "user", newChat);
+
     setLoading(true);
 
-    const response = await aiChat(newChat);
+    const response = await aiChat(newChat, chats);
 
     if (response) {
       setChats((chats) =>
@@ -41,6 +44,7 @@ const Promptbox = ({ setChats, setLoading }) => {
           },
         ])
       );
+      await insertChatDB(db, "assistant", response.trim());
     } else {
       setChats((chats) =>
         chats.concat([
@@ -49,6 +53,7 @@ const Promptbox = ({ setChats, setLoading }) => {
           },
         ])
       );
+      await insertChatDB(db, "error", "");
     }
 
     setLoading(false);
