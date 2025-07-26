@@ -2,9 +2,14 @@ import { ID } from "react-native-appwrite";
 import { account } from "./appwrite";
 
 const authService = {
-  async register(email, password) {
+  async register(email, password, username) {
     try {
-      const response = await account.create(ID.unique, email, password);
+      const response = await account.create(
+        ID.unique(),
+        email,
+        password,
+        username
+      );
       return response;
     } catch (error) {
       return {

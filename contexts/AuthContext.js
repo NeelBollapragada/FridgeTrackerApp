@@ -1,4 +1,4 @@
-import { createContext } from "react";
+import { createContext, useContext, useEffect, useState } from "react";
 import authService from "../services/authService";
 
 const authContext = createContext();
@@ -35,8 +35,8 @@ export const AuthProvider = ({ children }) => {
     return { success: true };
   };
 
-  const register = async (email, password) => {
-    const response = await authService.register(email, password);
+  const register = async (email, password, username) => {
+    const response = await authService.register(email, password, username);
 
     if (response?.error) {
       return response;
@@ -50,4 +50,12 @@ export const AuthProvider = ({ children }) => {
     setUser(null);
     await checkUser();
   };
+
+  return (
+    <authContext.Provider value={{ user, loading, login, register, logout }}>
+      {children}
+    </authContext.Provider>
+  );
 };
+
+export const useAuth = () => useContext(authContext);

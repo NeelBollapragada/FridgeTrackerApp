@@ -78,6 +78,19 @@ const _layout = () => {
           ),
         }}
       />
+      <Tabs.Screen
+        name="profile"
+        options={{
+          title: "Profile",
+          headerShown: true,
+          headerTitleStyle: {
+            marginLeft: 15,
+          },
+          tabBarIcon: ({ focused }) => (
+            <TabIcon focused={focused} icon="account" title="Profile" />
+          ),
+        }}
+      />
     </Tabs>
   );
 };
