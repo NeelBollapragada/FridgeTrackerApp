@@ -1,6 +1,7 @@
 import { Stack } from "expo-router";
 import { useEffect } from "react";
 import { DefaultTheme, Provider as PaperProvider } from "react-native-paper";
+import { AuthProvider } from "../contexts/AuthContext.js";
 import { preloadFoodItems } from "../services/preloadItems.js";
 import { getDB, setDB } from "../services/sqlite.js";
 import "./globals.css";
@@ -35,24 +36,26 @@ export default function RootLayout() {
   }, []);
 
   return (
-    <PaperProvider theme={customTheme}>
-      <Stack>
-        <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
-        <Stack.Screen
-          name="scan/scanner"
-          options={{
-            title: "Scanner",
-            headerShadowVisible: false,
-            headerStyle: {
-              backgroundColor: "#000030",
-            },
-            headerTitleStyle: {
-              color: "#fff",
-            },
-            headerTintColor: "#fff",
-          }}
-        />
-      </Stack>
-    </PaperProvider>
+    <AuthProvider>
+      <PaperProvider theme={customTheme}>
+        <Stack>
+          <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
+          <Stack.Screen
+            name="scan/scanner"
+            options={{
+              title: "Scanner",
+              headerShadowVisible: false,
+              headerStyle: {
+                backgroundColor: "#000030",
+              },
+              headerTitleStyle: {
+                color: "#fff",
+              },
+              headerTintColor: "#fff",
+            }}
+          />
+        </Stack>
+      </PaperProvider>
+    </AuthProvider>
   );
 }
