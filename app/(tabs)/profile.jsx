@@ -40,6 +40,16 @@ const Profile = () => {
       response = await register(email, password, username);
     } else {
       response = await login(email, password);
+      if (response?.success && !response?.fridgeSync) {
+        Alert.alert(
+          "Choose Fridge",
+          "Your cloud and local fridges are different. Which one should we keep?",
+          [
+            { text: "Keep Local", onPress: () => {} },
+            { text: "Keep Cloud", onPress: () => {} },
+          ]
+        );
+      }
     }
 
     if (response?.error) {

@@ -34,30 +34,31 @@ const FridgeCard = ({
   const [datePickerVisible, setDatePickerVisible] = useState(false);
 
   const handleClose = () => {
-    Alert.alert("Remove Fridge Item", "Would you like to log or delete", [
-      {
-        text: "Cancel",
-        style: "cancel",
-      },
-      {
-        text: "Log",
-      },
-      {
-        text: "Delete",
-        style: "destructive",
-        onPress: async () => {
-          const currData = fridgeData.filter(
-            (item) => item.id !== fridge_item.id
-          );
-          setFridgeData(currData);
-          const currQuery = filteredData.filter(
-            (item) => item.id !== fridge_item.id
-          );
-          setFilteredData(currQuery);
-          await deleteFridgeItemDB(db, fridge_item.id);
+    Alert.alert(
+      "Remove Fridge Item",
+      "Are you sure you want to delete this item?",
+      [
+        {
+          text: "Cancel",
+          style: "cancel",
         },
-      },
-    ]);
+        {
+          text: "Delete",
+          style: "destructive",
+          onPress: async () => {
+            const currData = fridgeData.filter(
+              (item) => item.id !== fridge_item.id
+            );
+            setFridgeData(currData);
+            const currQuery = filteredData.filter(
+              (item) => item.id !== fridge_item.id
+            );
+            setFilteredData(currQuery);
+            await deleteFridgeItemDB(db, fridge_item.id);
+          },
+        },
+      ]
+    );
   };
   useEffect(() => {
     setQuantity(fridge_item.quantity);

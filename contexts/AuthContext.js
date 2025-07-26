@@ -1,5 +1,6 @@
 import { createContext, useContext, useEffect, useState } from "react";
 import authService from "../services/authService";
+import { checkFridgeSync } from "../services/fridgeSync";
 
 const authContext = createContext();
 
@@ -32,7 +33,9 @@ export const AuthProvider = ({ children }) => {
     }
 
     await checkUser();
-    return { success: true };
+
+    const fridgeSync = await checkFridgeSync();
+    return { success: true, fridgeSync };
   };
 
   const register = async (email, password, username) => {
