@@ -69,6 +69,11 @@ const Profile = () => {
       }
       return;
     }
+
+    setUsername("");
+    setEmail("");
+    setPassword("");
+    setConfirmPassword("");
   };
 
   const handleLogout = async () => {

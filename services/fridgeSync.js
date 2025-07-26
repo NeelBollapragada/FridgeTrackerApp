@@ -30,15 +30,15 @@ export const checkFridgeSync = async () => {
   try {
     const db = await getDB();
     const localFridgeItems = await readFridgeDB(db);
-    const jwt = await account.getJWT();
+    const user = await account.get();
 
     const res = await fetch(FRIDGE_READ_URL, {
-      method: "GET",
+      method: "POST",
       headers: {
-        Authorization: `Bearer ${jwt.jwt}`,
+        "Content-Type": "application/json",
       },
+      body: JSON.stringify({ userId: user.$id }),
     });
-
     const appwriteFridgeItems = await res.json();
 
     const isSame = areFridgesEqual(localFridgeItems, appwriteFridgeItems);
