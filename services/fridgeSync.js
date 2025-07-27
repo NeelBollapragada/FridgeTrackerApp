@@ -1,5 +1,5 @@
 import { account } from "./appwrite";
-import { getDB, readFridgeDB } from "./sqlite";
+import { getDB, readFridgeDB, syncCloudFridgeDB } from "./sqlite";
 
 const FRIDGE_READ_URL = "https://fridgetrackerbackend.onrender.com/api/fridge";
 const FRIDGE_SYNC_URL =
@@ -73,5 +73,26 @@ export const keepLocalFridge = async () => {
     console.log("Local fridge synced successfully.");
   } catch (error) {
     console.error("Error keeping local fridge:", error);
+  }
+};
+
+export const keepCloudFridge = async () => {
+  try {
+    const user = await account.get();
+    const res = await fetch(FRIDGE_READ_URL, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ userId: user.$id }),
+    });
+
+    const appwriteFridgeItems = await res.json();
+
+    const db = await getDB();
+    await syncCloudFridgeDB(db, appwriteFridgeItems);
+    console.log("Cloud fridge synced successfully.");
+  } catch (error) {
+    console.error("Error keeping cloud fridge:", error);
   }
 };
