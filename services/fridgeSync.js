@@ -2,6 +2,8 @@ import { account } from "./appwrite";
 import { getDB, readFridgeDB } from "./sqlite";
 
 const FRIDGE_READ_URL = "https://fridgetrackerbackend.onrender.com/api/fridge";
+const FRIDGE_SYNC_URL =
+  "https://fridgetrackerbackend.onrender.com/api/fridge/sync";
 
 const areFridgesEqual = (localFridge, appwriteFridge) => {
   if (localFridge.length !== appwriteFridge.length) {
@@ -46,5 +48,30 @@ export const checkFridgeSync = async () => {
   } catch (error) {
     console.error("Error checking fridge sync:", error);
     return true;
+  }
+};
+
+export const keepLocalFridge = async () => {
+  try {
+    const db = await getDB();
+    const localFridgeItems = await readFridgeDB(db);
+    const user = await account.get();
+
+    const res = await fetch(FRIDGE_SYNC_URL, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ userId: user.$id, items: localFridgeItems }),
+    });
+
+    if (!res?.ok) {
+      const data = await res.json();
+      console.error("Error", data.error);
+    }
+
+    console.log("Local fridge synced successfully.");
+  } catch (error) {
+    console.error("Error keeping local fridge:", error);
   }
 };

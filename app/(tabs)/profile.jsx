@@ -8,6 +8,7 @@ import {
   View,
 } from "react-native";
 import { useAuth } from "../../contexts/AuthContext.js";
+import { keepLocalFridge } from "../../services/fridgeSync.js";
 
 const Profile = () => {
   const { user, register, login, logout } = useAuth();
@@ -45,7 +46,12 @@ const Profile = () => {
           "Choose Fridge",
           "Your cloud and local fridges are different. Which one should we keep?",
           [
-            { text: "Keep Local", onPress: () => {} },
+            {
+              text: "Keep Local",
+              onPress: () => {
+                keepLocalFridge();
+              },
+            },
             { text: "Keep Cloud", onPress: () => {} },
           ]
         );
@@ -74,6 +80,7 @@ const Profile = () => {
     setEmail("");
     setPassword("");
     setConfirmPassword("");
+    setError("");
   };
 
   const handleLogout = async () => {
