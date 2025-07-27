@@ -20,7 +20,7 @@ const AddFoodCard = memo(
 
     const handleAdd = async () => {
       const newItem = await insertFridgeItem(db, food_item);
-      const check = await checkFoodItemDB(db);
+      const check = await checkFoodItemDB(db, food_item.code);
       if (!check) {
         await insertFoodItemDB(db, food_item);
       }

@@ -8,7 +8,7 @@ import {
   View,
 } from "react-native";
 import { useAuth } from "../../contexts/AuthContext.js";
-import { keepLocalFridge } from "../../services/fridgeSync.js";
+import { keepCloudFridge, keepLocalFridge } from "../../services/fridgeSync.js";
 
 const Profile = () => {
   const { user, register, login, logout } = useAuth();
@@ -52,7 +52,12 @@ const Profile = () => {
                 keepLocalFridge();
               },
             },
-            { text: "Keep Cloud", onPress: () => {} },
+            {
+              text: "Keep Cloud",
+              onPress: () => {
+                keepCloudFridge();
+              },
+            },
           ]
         );
       }

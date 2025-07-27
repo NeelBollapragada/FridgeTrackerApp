@@ -277,3 +277,31 @@ export const clearChatsDB = async (db) => {
     console.error("18", error);
   }
 };
+
+export const syncCloudFridgeDB = async (db, fridgeItems) => {
+  try {
+    await db.runAsync(`DELETE FROM fridge_items`);
+
+    for (const item of fridgeItems) {
+      await db.runAsync(
+        "INSERT INTO fridge_items (code, name, image_url, energy_kcal, protein, carbohydrates, fat_total, fat_saturated, fat_unsaturated, expiry_date, quantity, unit) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
+        [
+          item.code,
+          item.name,
+          item.image_url,
+          item.energy_kcal,
+          item.protein,
+          item.carbohydrates,
+          item.fat_total,
+          item.fat_saturated,
+          item.fat_unsaturated,
+          item.expiry_date || "",
+          item.quantity || 1,
+          item.unit || "",
+        ]
+      );
+    }
+  } catch (error) {
+    console.error("19", error);
+  }
+};
