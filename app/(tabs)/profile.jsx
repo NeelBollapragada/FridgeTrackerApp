@@ -48,14 +48,14 @@ const Profile = () => {
           [
             {
               text: "Keep Local",
-              onPress: () => {
-                keepLocalFridge();
+              onPress: async () => {
+                await keepLocalFridge();
               },
             },
             {
               text: "Keep Cloud",
-              onPress: () => {
-                keepCloudFridge();
+              onPress: async () => {
+                await keepCloudFridge();
               },
             },
           ]

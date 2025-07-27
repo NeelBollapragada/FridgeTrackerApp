@@ -1,6 +1,6 @@
 import { createContext, useContext, useEffect, useState } from "react";
 import authService from "../services/authService";
-import { checkFridgeSync } from "../services/fridgeSync";
+import { checkFridgeSync, keepLocalFridge } from "../services/fridgeSync";
 
 const authContext = createContext();
 
@@ -45,7 +45,13 @@ export const AuthProvider = ({ children }) => {
       return response;
     }
 
-    return login(email, password);
+    const loginResponse = await login(email, password);
+
+    if (loginResponse.success) {
+      await keepLocalFridge();
+    }
+
+    return loginResponse;
   };
 
   const logout = async () => {
