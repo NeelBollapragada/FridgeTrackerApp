@@ -1,6 +1,7 @@
 import { memo, useState } from "react";
 import { Image, Text, TouchableOpacity, View } from "react-native";
 import { Portal, Snackbar } from "react-native-paper";
+import { addCloudFridge } from "../../services/fridgeSync";
 import {
   checkFoodItemDB,
   insertFoodItemDB,
@@ -29,6 +30,7 @@ const AddFoodCard = memo(
       const currQuery = [...filteredData, newItem[0]];
       setFilteredData(currQuery);
       setSnackbar(true);
+      await addCloudFridge(newItem[0]);
     };
 
     return (
