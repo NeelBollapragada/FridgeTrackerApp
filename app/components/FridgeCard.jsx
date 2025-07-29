@@ -16,7 +16,10 @@ import {
   updateFridgeQuantityDB,
   updateFridgeUnitDB,
 } from "../../services/sqlite";
-import { removeCloudFridge } from "../../services/fridgeSync";
+import {
+  removeCloudFridge,
+  updateCloudFridge,
+} from "../../services/fridgeSync";
 
 const FridgeCard = ({
   fridge_item,
@@ -72,12 +75,14 @@ const FridgeCard = ({
     setQuantity(newQuantity);
     fridge_item.quantity = newQuantity;
     await updateFridgeQuantityDB(db, fridge_item.id, newQuantity);
+    await updateCloudFridge(fridge_item.id, newQuantity, "quantity");
   };
 
   const handleUnit = async (newUnit) => {
     setUnit(newUnit);
     fridge_item.unit = newUnit;
     await updateFridgeUnitDB(db, fridge_item.id, newUnit);
+    await updateCloudFridge(fridge_item.id, newUnit, "unit");
   };
 
   const handleDate = async (newDate) => {
@@ -92,6 +97,7 @@ const FridgeCard = ({
     setExpiry(dayExpiry(expires));
     await updateFridgeExpiryDB(db, fridge_item.id, expires);
     setDatePickerVisible(false);
+    await updateCloudFridge(fridge_item.id, expires, "expiry_date");
   };
 
   const checkExpiry = (expiry) => {
