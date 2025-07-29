@@ -16,6 +16,7 @@ import {
   updateFridgeQuantityDB,
   updateFridgeUnitDB,
 } from "../../services/sqlite";
+import { removeCloudFridge } from "../../services/fridgeSync";
 
 const FridgeCard = ({
   fridge_item,
@@ -55,6 +56,7 @@ const FridgeCard = ({
             );
             setFilteredData(currQuery);
             await deleteFridgeItemDB(db, fridge_item.id);
+            await removeCloudFridge(fridge_item.id);
           },
         },
       ]

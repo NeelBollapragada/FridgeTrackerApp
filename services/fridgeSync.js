@@ -7,6 +7,8 @@ const FRIDGE_SYNC_URL =
   "https://fridgetrackerbackend.onrender.com/api/fridge/sync";
 const FRIDGE_ADD_URL =
   "https://fridgetrackerbackend.onrender.com/api/fridge/add";
+const FRIDGE_REMOVE_URL =
+  "https://fridgetrackerbackend.onrender.com/api/fridge/remove";
 
 const areFridgesEqual = (localFridge, appwriteFridge) => {
   if (localFridge.length !== appwriteFridge.length) {
@@ -122,7 +124,7 @@ export const keepCloudFridge = async () => {
 export const addCloudFridge = async (item) => {
   const online = await checkNetwork();
   if (!online) {
-    console.warn("No internet connection. Skipping.");
+    console.warn("No internet connection. Skipping add.");
     return;
   }
 
@@ -144,6 +146,35 @@ export const addCloudFridge = async (item) => {
 
     console.log("Item added to cloud fridge successfully.");
   } catch (error) {
-    console.error("Error adding item to cloud fridge:", error);
+    console.error("Error caught adding item to cloud fridge:", error);
+  }
+};
+
+export const removeCloudFridge = async (id) => {
+  const online = await checkNetwork();
+  if (!online) {
+    console.warn("No internet connection. Skipping remove.");
+    return;
+  }
+
+  try {
+    const user = await account.get();
+    const res = await fetch(FRIDGE_REMOVE_URL, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ userId: user.$id, itemId: id }),
+    });
+
+    if (!res?.ok) {
+      const data = await res.json();
+      console.error("Error removing item from cloud fridge:", data.error);
+      return;
+    }
+
+    console.log("Item removed from cloud fridge successfully.");
+  } catch (error) {
+    console.error("Error caught removing item from cloud fridge:", error);
   }
 };
