@@ -1,4 +1,5 @@
 import { account } from "./appwrite";
+import { checkNetwork } from "./netinfo";
 import { getDB, readFridgeDB, syncCloudFridgeDB } from "./sqlite";
 
 const FRIDGE_READ_URL = "https://fridgetrackerbackend.onrender.com/api/fridge";
@@ -29,6 +30,12 @@ const areFridgesEqual = (localFridge, appwriteFridge) => {
 };
 
 export const checkFridgeSync = async () => {
+  const online = await checkNetwork();
+  if (!online) {
+    console.warn("No internet connection. Skipping fridge sync check.");
+    return true;
+  }
+
   try {
     const db = await getDB();
     const localFridgeItems = await readFridgeDB(db);
@@ -52,6 +59,12 @@ export const checkFridgeSync = async () => {
 };
 
 export const keepLocalFridge = async () => {
+  const online = await checkNetwork();
+  if (!online) {
+    console.warn("No internet connection. Skipping local fridge sync.");
+    return;
+  }
+
   try {
     const db = await getDB();
     const localFridgeItems = await readFridgeDB(db);
@@ -77,6 +90,12 @@ export const keepLocalFridge = async () => {
 };
 
 export const keepCloudFridge = async () => {
+  const online = await checkNetwork();
+  if (!online) {
+    console.warn("No internet connection. Skipping cloud fridge sync.");
+    return;
+  }
+
   try {
     const user = await account.get();
     const res = await fetch(FRIDGE_READ_URL, {
