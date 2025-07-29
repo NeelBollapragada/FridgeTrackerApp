@@ -5,6 +5,8 @@ import { getDB, readFridgeDB, syncCloudFridgeDB } from "./sqlite";
 const FRIDGE_READ_URL = "https://fridgetrackerbackend.onrender.com/api/fridge";
 const FRIDGE_SYNC_URL =
   "https://fridgetrackerbackend.onrender.com/api/fridge/sync";
+const FRIDGE_ADD_URL =
+  "https://fridgetrackerbackend.onrender.com/api/fridge/add";
 
 const areFridgesEqual = (localFridge, appwriteFridge) => {
   if (localFridge.length !== appwriteFridge.length) {
@@ -81,6 +83,7 @@ export const keepLocalFridge = async () => {
     if (!res?.ok) {
       const data = await res.json();
       console.error("Error", data.error);
+      return;
     }
 
     console.log("Local fridge synced successfully.");
@@ -113,5 +116,34 @@ export const keepCloudFridge = async () => {
     console.log("Cloud fridge synced successfully.");
   } catch (error) {
     console.error("Error keeping cloud fridge:", error);
+  }
+};
+
+export const addCloudFridge = async (item) => {
+  const online = await checkNetwork();
+  if (!online) {
+    console.warn("No internet connection. Skipping.");
+    return;
+  }
+
+  try {
+    const user = await account.get();
+    const res = await fetch(FRIDGE_ADD_URL, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ userId: user.$id, item }),
+    });
+
+    if (!res?.ok) {
+      const data = await res.json();
+      console.error("Error adding item to cloud fridge:", data.error);
+      return;
+    }
+
+    console.log("Item added to cloud fridge successfully.");
+  } catch (error) {
+    console.error("Error adding item to cloud fridge:", error);
   }
 };
