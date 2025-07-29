@@ -1,4 +1,9 @@
 export const searchFood = async (searchTerm) => {
+  const online = await checkNetwork();
+  if (!online) {
+    console.warn("No internet connection. Skipping food search.");
+    return [];
+  }
   try {
     const results = await fetch(
       `https://world.openfoodfacts.org/cgi/search.pl?search_terms=${encodeURIComponent(searchTerm)}&search_simple=1&action=process&json=1&page_size=15`
@@ -51,6 +56,11 @@ export const searchFood = async (searchTerm) => {
 };
 
 export const barcodeSearch = async (barcode) => {
+  const online = await checkNetwork();
+  if (!online) {
+    console.warn("No internet connection. Skipping barcode scan.");
+    return null;
+  }
   try {
     const results = await fetch(
       `https://world.openfoodfacts.net/api/v2/product/${barcode}`
@@ -88,5 +98,8 @@ export const barcodeSearch = async (barcode) => {
 
       return item;
     }
-  } catch (error) {}
+  } catch (error) {
+    console.error("openFood api error barcode", error);
+    return null;
+  }
 };
