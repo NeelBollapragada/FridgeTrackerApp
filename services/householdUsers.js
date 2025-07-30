@@ -117,8 +117,8 @@ export const getHouseholdMembers = async () => {
       return;
     }
 
-    const members = await res.json();
-    return members;
+    const info = await res.json();
+    return info;
   } catch (error) {
     console.error("Error caught fetching members", error);
     return false;

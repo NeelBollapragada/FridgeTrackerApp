@@ -34,7 +34,7 @@ const Profile = () => {
   const [loading, setLoading] = useState(false);
 
   const [household, setHousehold] = useState(false);
-  const [members, setMembers] = useState([]);
+  const [info, setInfo] = useState(null);
 
   const handleAuth = async () => {
     if (!email.trim() || !password.trim()) {
@@ -83,13 +83,13 @@ const Profile = () => {
           ]
         );
       }
-      const names = await getHouseholdMembers();
-      if (typeof names === "object") {
+      const res = await getHouseholdMembers();
+      if (typeof res === "object") {
         setHousehold(true);
-        setMembers(names);
+        setInfo(res);
       } else {
         setHousehold(false);
-        setMembers([]);
+        setInfo(null);
       }
       setLoading(false);
     }
@@ -254,7 +254,7 @@ const Profile = () => {
           <View className="flex-row justify-between items-center">
             <View className="flex-row items-center">
               <Text className="text-lg font-medium">Code: </Text>
-              <Text className="text-lg">EXAMPL</Text>
+              <Text className="text-lg">{info && info.code}</Text>
             </View>
             <TouchableOpacity className="bg-red-700 flex-row items-center pl-3 pr-2 py-2 rounded-lg">
               <Text className="text-white">Leave{"  "}</Text>
@@ -265,9 +265,9 @@ const Profile = () => {
           <View className="flex-row items-center">
             <Text className="px-2">{user && user.name} </Text>
             <Text className="italic">(You)</Text>
-            {members && (
+            {info && (
               <FlatList
-                data={members}
+                data={info.members}
                 renderItem={({ item }) => {
                   if (item !== user.name) {
                     return <Text className="px-2">{item}</Text>;
