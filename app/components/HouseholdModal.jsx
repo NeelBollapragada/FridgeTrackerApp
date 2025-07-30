@@ -58,7 +58,6 @@ const HouseholdModal = ({
               className="bg-blue-500 rounded-lg"
               onPress={() => {
                 handleHouseholdJoin();
-                setVisible(false);
               }}
             >
               <Text className="text-white px-3 py-2">Join Household</Text>
