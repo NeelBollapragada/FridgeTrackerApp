@@ -25,7 +25,10 @@ const HouseholdModal = ({
             </Text>
             <TouchableOpacity
               className="mr-4"
-              onPress={() => setVisible(false)}
+              onPress={() => {
+                setVisible(false);
+                setCodeInput("");
+              }}
             >
               <Icon source="close" size={24} />
             </TouchableOpacity>

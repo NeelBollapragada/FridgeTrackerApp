@@ -130,7 +130,7 @@ const Profile = () => {
       return;
     }
 
-    const res = await joinHousehold(codeInput);
+    const res = await joinHousehold(codeInput.toUpperCase());
 
     if (!res) return;
 
@@ -144,6 +144,7 @@ const Profile = () => {
     setInfo(res);
     setHousehold(true);
     setModalVisible(false);
+    setCodeInput("");
     setLoading(false);
   };
 
@@ -153,6 +154,7 @@ const Profile = () => {
     setInfo({ code: joinCode });
 
     setHousehold(true);
+    setCodeInput("");
     setLoading(false);
   };
 
