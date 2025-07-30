@@ -1,15 +1,19 @@
 import { ID } from "react-native-appwrite";
 import { account } from "./appwrite";
+import { addUserToCloud } from "./householdUsers";
 
 const authService = {
   async register(email, password, username) {
     try {
+      const uniqueId = ID.unique();
       const response = await account.create(
-        ID.unique(),
+        uniqueId,
         email,
         password,
         username
       );
+
+      await addUserToCloud(uniqueId, username);
       return response;
     } catch (error) {
       return {
