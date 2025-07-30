@@ -7,6 +7,8 @@ const HouseholdModal = ({
   error,
   codeInput,
   setCodeInput,
+  handleHouseholdJoin,
+  handleHouseholdCreate,
 }) => {
   return (
     <Modal
@@ -36,7 +38,13 @@ const HouseholdModal = ({
             together. Whether you're living with others or just want a shared
             grocery system, households help you stay organized as a team.
           </Text>
-          <TouchableOpacity className="bg-blue-500 rounded-lg ml-10 mr-auto mb-4">
+          <TouchableOpacity
+            className="bg-blue-500 rounded-lg ml-10 mr-auto mb-6"
+            onPress={() => {
+              handleHouseholdCreate();
+              setVisible(false);
+            }}
+          >
             <Text className="text-white px-3 py-2">Create a Household</Text>
           </TouchableOpacity>
           <View className="flex-row items-center mx-10 mb-2">
@@ -46,7 +54,13 @@ const HouseholdModal = ({
               onChangeText={setCodeInput}
               className="border border-black w-32 mr-4 py-0 h-8"
             />
-            <TouchableOpacity className="bg-blue-500 rounded-lg">
+            <TouchableOpacity
+              className="bg-blue-500 rounded-lg"
+              onPress={() => {
+                handleHouseholdJoin();
+                setVisible(false);
+              }}
+            >
               <Text className="text-white px-3 py-2">Join Household</Text>
             </TouchableOpacity>
           </View>

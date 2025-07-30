@@ -9,7 +9,10 @@ import {
 } from "react-native";
 import { useAuth } from "../../contexts/AuthContext.js";
 import { keepCloudFridge, keepLocalFridge } from "../../services/fridgeSync.js";
-import { checkUserName } from "../../services/householdUsers.js";
+import {
+  checkUserName,
+  createHousehold,
+} from "../../services/householdUsers.js";
 import HouseholdModal from "../components/HouseholdModal.jsx";
 
 const Profile = () => {
@@ -101,6 +104,18 @@ const Profile = () => {
 
   const handleLogout = async () => {
     await logout();
+  };
+
+  const handleHouseholdJoin = async () => {
+    if (!codeInput.trim()) {
+      setJoinError("Household code cannot be empty.");
+    }
+  };
+
+  const handleHouseholdCreate = async () => {
+    const joinCode = await createHousehold();
+
+    console.log(joinCode);
   };
 
   if (!user) {
@@ -213,6 +228,8 @@ const Profile = () => {
         error={joinError}
         codeInput={codeInput}
         setCodeInput={setCodeInput}
+        handleHouseholdJoin={handleHouseholdJoin}
+        handleHouseholdCreate={handleHouseholdCreate}
       />
     </View>
   );
