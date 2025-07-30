@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import {
   Alert,
   FlatList,
@@ -16,6 +16,7 @@ import {
   createHousehold,
   getHouseholdMembers,
   joinHousehold,
+  leaveHousehold,
 } from "../../services/householdUsers.js";
 import HouseholdModal from "../components/HouseholdModal.jsx";
 
@@ -36,6 +37,22 @@ const Profile = () => {
 
   const [household, setHousehold] = useState(false);
   const [info, setInfo] = useState(null);
+
+  useEffect(() => {
+    const init = async () => {
+      if (user) {
+        const res = await getHouseholdMembers();
+        if (typeof res === "object") {
+          setHousehold(true);
+          setInfo(res);
+        }
+      }
+    };
+
+    setLoading(true);
+    init();
+    setLoading(false);
+  }, [user]);
 
   const handleAuth = async () => {
     if (!email.trim() || !password.trim()) {
@@ -158,6 +175,21 @@ const Profile = () => {
     setLoading(false);
   };
 
+  const handleHouseholdLeave = async () => {
+    setLoading(true);
+
+    const res = await leaveHousehold();
+
+    if (!res) {
+      setLoading(false);
+      return;
+    }
+
+    setInfo(null);
+    setHousehold(false);
+    setLoading(false);
+  };
+
   if (!user) {
     return (
       <View>
@@ -275,7 +307,10 @@ const Profile = () => {
               <Text className="text-lg font-medium">Code: </Text>
               <Text className="text-lg">{info && info.code}</Text>
             </View>
-            <TouchableOpacity className="bg-red-700 flex-row items-center pl-3 pr-2 py-2 rounded-lg">
+            <TouchableOpacity
+              className="bg-red-700 flex-row items-center pl-3 pr-2 py-2 rounded-lg"
+              onPress={handleHouseholdLeave}
+            >
               <Text className="text-white">Leave{"  "}</Text>
               <Icon source="exit-to-app" color="#fff" size={24} />
             </TouchableOpacity>
