@@ -10,6 +10,8 @@ const HOUSEHOLD_MEMBERS =
   "https://fridgetrackerbackend.onrender.com/api/household/members";
 const HOUSEHOLD_JOIN =
   "https://fridgetrackerbackend.onrender.com/api/household/join";
+const HOUSEHOLD_LEAVE =
+  "https://fridgetrackerbackend.onrender.com/api/household/leave";
 
 export const checkUserName = async (name) => {
   const online = await checkNetwork();
@@ -155,5 +157,36 @@ export const joinHousehold = async (code) => {
   } catch (error) {
     console.error("Error caught joining household", error);
     return null;
+  }
+};
+
+export const leaveHousehold = async () => {
+  const online = await checkNetwork();
+  if (!online) {
+    console.warn("No internet connection. Skipping household leave.");
+    return false;
+  }
+
+  try {
+    const user = await account.get();
+    const res = await fetch(HOUSEHOLD_LEAVE, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ userId: user.$id, username: user.name }),
+    });
+
+    if (!res.ok) {
+      const data = await res.json();
+      console.error("Error leaving household", data.error);
+      return false;
+    }
+
+    console.log("User left household successfully");
+    return true;
+  } catch (error) {
+    console.error("Error caught leaving household", error);
+    return false;
   }
 };
