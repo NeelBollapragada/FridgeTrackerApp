@@ -1,9 +1,11 @@
+import { account } from "./appwrite";
 import { checkNetwork } from "./netinfo";
 
 const USERNAME_CHECK_URL =
   "https://fridgetrackerbackend.onrender.com/api/users/check";
-
 const USER_ADD_URL = "https://fridgetrackerbackend.onrender.com/api/users/add";
+const HOUSEHOLD_CREATE =
+  "https://fridgetrackerbackend.onrender.com/api/household/create";
 
 export const checkUserName = async (name) => {
   const online = await checkNetwork();
@@ -63,5 +65,29 @@ export const addUserToCloud = async (id, username) => {
     console.log("User added successfully.");
   } catch (error) {
     console.error("Error caught adding user:", error);
+  }
+};
+
+export const createHousehold = async () => {
+  const online = await checkNetwork();
+  if (!online) {
+    console.warn("No internet connection. Skipping household creation.");
+    return;
+  }
+
+  try {
+    const user = await account.get();
+    const res = await fetch(HOUSEHOLD_CREATE, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ userId: user.$id }),
+    });
+
+    const code = await res.json();
+    return code;
+  } catch (error) {
+    console.error("Error caught creating household", error);
   }
 };
