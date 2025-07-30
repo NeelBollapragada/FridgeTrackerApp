@@ -15,6 +15,7 @@ import {
   checkUserName,
   createHousehold,
   getHouseholdMembers,
+  joinHousehold,
 } from "../../services/householdUsers.js";
 import HouseholdModal from "../components/HouseholdModal.jsx";
 
@@ -126,17 +127,35 @@ const Profile = () => {
   const handleHouseholdJoin = async () => {
     if (!codeInput.trim()) {
       setJoinError("Household code cannot be empty.");
+      return;
     }
 
+    const res = await joinHousehold(codeInput.toUpperCase());
+
+    if (!res) return;
+
+    if (res.error) {
+      setJoinError("Invalid code. Household doesn't exist!");
+      return;
+    }
+
+    setLoading(true);
+
+    setInfo(res);
     setHousehold(true);
+    setModalVisible(false);
+    setCodeInput("");
+    setLoading(false);
   };
 
   const handleHouseholdCreate = async () => {
+    setLoading(true);
     const joinCode = await createHousehold();
-
-    console.log(joinCode);
+    setInfo({ code: joinCode });
 
     setHousehold(true);
+    setCodeInput("");
+    setLoading(false);
   };
 
   if (!user) {
@@ -262,21 +281,21 @@ const Profile = () => {
             </TouchableOpacity>
           </View>
           <Text className="text-lg font-medium my-2">Members</Text>
-          <View className="flex-row items-center">
+          <View className="flex-row items-center mb-2">
             <Text className="px-2">{user && user.name} </Text>
             <Text className="italic">(You)</Text>
-            {info && (
-              <FlatList
-                data={info.members}
-                renderItem={({ item }) => {
-                  if (item !== user.name) {
-                    return <Text className="px-2">{item}</Text>;
-                  }
-                }}
-                keyExtractor={(item) => item}
-              />
-            )}
           </View>
+          {info?.members && (
+            <FlatList
+              data={info.members}
+              renderItem={({ item }) => {
+                if (item !== user.name) {
+                  return <Text className="px-2 mb-2">{item}</Text>;
+                }
+              }}
+              keyExtractor={(item) => item}
+            />
+          )}
         </View>
       )}
       <HouseholdModal

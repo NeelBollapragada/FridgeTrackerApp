@@ -25,7 +25,10 @@ const HouseholdModal = ({
             </Text>
             <TouchableOpacity
               className="mr-4"
-              onPress={() => setVisible(false)}
+              onPress={() => {
+                setVisible(false);
+                setCodeInput("");
+              }}
             >
               <Icon source="close" size={24} />
             </TouchableOpacity>
@@ -58,7 +61,6 @@ const HouseholdModal = ({
               className="bg-blue-500 rounded-lg"
               onPress={() => {
                 handleHouseholdJoin();
-                setVisible(false);
               }}
             >
               <Text className="text-white px-3 py-2">Join Household</Text>
