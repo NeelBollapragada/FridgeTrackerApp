@@ -1,9 +1,15 @@
 import { ID } from "react-native-appwrite";
 import { account } from "./appwrite";
 import { addUserToCloud } from "./householdUsers";
+import { checkNetwork } from "./netinfo";
 
 const authService = {
   async register(email, password, username) {
+    const online = await checkNetwork();
+    if (!online) {
+      console.warn("No internet connection. Aborting.");
+      return;
+    }
     try {
       const uniqueId = ID.unique();
       const response = await account.create(
@@ -23,6 +29,11 @@ const authService = {
   },
 
   async login(email, password) {
+    const online = await checkNetwork();
+    if (!online) {
+      console.warn("No internet connection. Aborting.");
+      return;
+    }
     try {
       const response = await account.createEmailPasswordSession(
         email,
@@ -37,6 +48,11 @@ const authService = {
   },
 
   async getUser() {
+    const online = await checkNetwork();
+    if (!online) {
+      console.warn("No internet connection. Aborting.");
+      return;
+    }
     try {
       return await account.get();
     } catch (error) {
@@ -45,6 +61,11 @@ const authService = {
   },
 
   async logout() {
+    const online = await checkNetwork();
+    if (!online) {
+      console.warn("No internet connection. Aborting.");
+      return;
+    }
     try {
       await account.deleteSession("current");
     } catch (error) {
