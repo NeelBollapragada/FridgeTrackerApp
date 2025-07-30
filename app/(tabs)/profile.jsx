@@ -1,17 +1,20 @@
 import { useState } from "react";
 import {
   Alert,
+  FlatList,
   StyleSheet,
   Text,
   TextInput,
   TouchableOpacity,
   View,
 } from "react-native";
+import { Icon } from "react-native-paper";
 import { useAuth } from "../../contexts/AuthContext.js";
 import { keepCloudFridge, keepLocalFridge } from "../../services/fridgeSync.js";
 import {
   checkUserName,
   createHousehold,
+  getHouseholdMembers,
 } from "../../services/householdUsers.js";
 import HouseholdModal from "../components/HouseholdModal.jsx";
 
@@ -28,6 +31,9 @@ const Profile = () => {
   const [modalVisible, setModalVisible] = useState(false);
   const [codeInput, setCodeInput] = useState("");
   const [joinError, setJoinError] = useState("");
+
+  const [household, setHousehold] = useState(false);
+  const [members, setMembers] = useState([]);
 
   const handleAuth = async () => {
     if (!email.trim() || !password.trim()) {
@@ -75,6 +81,14 @@ const Profile = () => {
           ]
         );
       }
+      const names = await getHouseholdMembers();
+      if (typeof names === "object") {
+        setHousehold(true);
+        setMembers(names);
+      } else {
+        setHousehold(false);
+        setMembers([]);
+      }
     }
 
     if (response?.error) {
@@ -110,12 +124,16 @@ const Profile = () => {
     if (!codeInput.trim()) {
       setJoinError("Household code cannot be empty.");
     }
+
+    setHousehold(true);
   };
 
   const handleHouseholdCreate = async () => {
     const joinCode = await createHousehold();
 
     console.log(joinCode);
+
+    setHousehold(true);
   };
 
   if (!user) {
@@ -214,14 +232,46 @@ const Profile = () => {
           <Text className="text-white px-4 py-3">Logout</Text>
         </TouchableOpacity>
       </View>
-      <TouchableOpacity
-        className="bg-blue-500 mx-auto mt-32 rounded-lg"
-        onPress={() => setModalVisible(true)}
-      >
-        <Text className="text-white px-3 py-2">
-          Create + or join a household
-        </Text>
-      </TouchableOpacity>
+      {!household ? (
+        <TouchableOpacity
+          className="bg-blue-500 mx-auto mt-32 rounded-lg"
+          onPress={() => setModalVisible(true)}
+        >
+          <Text className="text-white px-3 py-2">
+            Create + or join a household
+          </Text>
+        </TouchableOpacity>
+      ) : (
+        <View className="flex-1 flex-col p-16 mt-10">
+          <Text className="text-2xl font-bold mb-4">Household</Text>
+          <View className="flex-row justify-between items-center">
+            <View className="flex-row items-center">
+              <Text className="text-lg font-medium">Code: </Text>
+              <Text className="text-lg">EXAMPL</Text>
+            </View>
+            <TouchableOpacity className="bg-red-700 flex-row items-center pl-3 pr-2 py-2 rounded-lg">
+              <Text className="text-white">Leave{"  "}</Text>
+              <Icon source="exit-to-app" color="#fff" size={24} />
+            </TouchableOpacity>
+          </View>
+          <Text className="text-lg font-medium my-2">Members</Text>
+          <View className="flex-row items-center">
+            <Text className="px-2">{user && user.name} </Text>
+            <Text className="italic">(You)</Text>
+            {members && (
+              <FlatList
+                data={members}
+                renderItem={({ item }) => {
+                  if (item !== user.name) {
+                    return <Text className="px-2">{item}</Text>;
+                  }
+                }}
+                keyExtractor={(item) => item}
+              />
+            )}
+          </View>
+        </View>
+      )}
       <HouseholdModal
         visible={modalVisible}
         setVisible={setModalVisible}
