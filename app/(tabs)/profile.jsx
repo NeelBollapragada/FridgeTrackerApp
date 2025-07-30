@@ -132,11 +132,12 @@ const Profile = () => {
   };
 
   const handleHouseholdCreate = async () => {
+    setLoading(true);
     const joinCode = await createHousehold();
-
-    console.log(joinCode);
+    setInfo({ code: joinCode });
 
     setHousehold(true);
+    setLoading(false);
   };
 
   if (!user) {
@@ -265,7 +266,7 @@ const Profile = () => {
           <View className="flex-row items-center">
             <Text className="px-2">{user && user.name} </Text>
             <Text className="italic">(You)</Text>
-            {info && (
+            {info?.members && (
               <FlatList
                 data={info.members}
                 renderItem={({ item }) => {
