@@ -9,6 +9,7 @@ import {
 } from "react-native";
 import { useAuth } from "../../contexts/AuthContext.js";
 import { keepCloudFridge, keepLocalFridge } from "../../services/fridgeSync.js";
+import { checkUserName } from "../../services/householdUsers.js";
 
 const Profile = () => {
   const { user, register, login, logout } = useAuth();
@@ -38,7 +39,12 @@ const Profile = () => {
 
     let response;
     if (isRegistering) {
-      response = await register(email, password, username);
+      const nameFree = await checkUserName(username.trim());
+      if (!nameFree) {
+        setError("Username is already taken.");
+        return;
+      }
+      response = await register(email, password, username.trim());
     } else {
       response = await login(email, password);
       if (response?.success && !response?.fridgeSync) {
