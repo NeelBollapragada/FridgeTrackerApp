@@ -10,6 +10,7 @@ import {
 import { useAuth } from "../../contexts/AuthContext.js";
 import { keepCloudFridge, keepLocalFridge } from "../../services/fridgeSync.js";
 import { checkUserName } from "../../services/householdUsers.js";
+import HouseholdModal from "../components/HouseholdModal.jsx";
 
 const Profile = () => {
   const { user, register, login, logout } = useAuth();
@@ -20,6 +21,10 @@ const Profile = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
+
+  const [modalVisible, setModalVisible] = useState(false);
+  const [codeInput, setCodeInput] = useState("");
+  const [joinError, setJoinError] = useState("");
 
   const handleAuth = async () => {
     if (!email.trim() || !password.trim()) {
@@ -183,17 +188,32 @@ const Profile = () => {
         <Text className="text-3xl font-bold text-center mt-10">
           Welcome, {user && user.name}
         </Text>
-        <View className="flex-row items-center mt-8 justify-center mb-6">
+        <View className="flex-row items-center mt-8 justify-center mb-4">
           <Text className="text-gray-700 font-medium">Email: </Text>
           <Text>{user && user.email}</Text>
         </View>
+        <TouchableOpacity
+          className="bg-red-700 mx-auto my-4 rounded-lg"
+          onPress={handleLogout}
+        >
+          <Text className="text-white px-4 py-3">Logout</Text>
+        </TouchableOpacity>
       </View>
       <TouchableOpacity
-        className="bg-red-700 mx-auto mt-4 rounded-lg"
-        onPress={handleLogout}
+        className="bg-blue-500 mx-auto mt-32 rounded-lg"
+        onPress={() => setModalVisible(true)}
       >
-        <Text className="text-white px-4 py-3">Logout</Text>
+        <Text className="text-white px-3 py-2">
+          Create + or join a household
+        </Text>
       </TouchableOpacity>
+      <HouseholdModal
+        visible={modalVisible}
+        setVisible={setModalVisible}
+        error={joinError}
+        codeInput={codeInput}
+        setCodeInput={setCodeInput}
+      />
     </View>
   );
 };
