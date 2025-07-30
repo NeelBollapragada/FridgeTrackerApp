@@ -8,7 +8,7 @@ import {
   TouchableOpacity,
   View,
 } from "react-native";
-import { Icon } from "react-native-paper";
+import { ActivityIndicator, Icon } from "react-native-paper";
 import { useAuth } from "../../contexts/AuthContext.js";
 import { keepCloudFridge, keepLocalFridge } from "../../services/fridgeSync.js";
 import {
@@ -31,6 +31,7 @@ const Profile = () => {
   const [modalVisible, setModalVisible] = useState(false);
   const [codeInput, setCodeInput] = useState("");
   const [joinError, setJoinError] = useState("");
+  const [loading, setLoading] = useState(false);
 
   const [household, setHousehold] = useState(false);
   const [members, setMembers] = useState([]);
@@ -60,6 +61,7 @@ const Profile = () => {
       }
       response = await register(email, password, username.trim());
     } else {
+      setLoading(true);
       response = await login(email, password);
       if (response?.success && !response?.fridgeSync) {
         Alert.alert(
@@ -89,6 +91,7 @@ const Profile = () => {
         setHousehold(false);
         setMembers([]);
       }
+      setLoading(false);
     }
 
     if (response?.error) {
@@ -232,7 +235,11 @@ const Profile = () => {
           <Text className="text-white px-4 py-3">Logout</Text>
         </TouchableOpacity>
       </View>
-      {!household ? (
+      {loading ? (
+        <View className="flex-1 justify-center items-center">
+          <ActivityIndicator animating color="#3b82f6" />
+        </View>
+      ) : !household ? (
         <TouchableOpacity
           className="bg-blue-500 mx-auto mt-32 rounded-lg"
           onPress={() => setModalVisible(true)}
