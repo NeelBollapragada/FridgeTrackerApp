@@ -7,7 +7,7 @@ import {
   TouchableOpacity,
   View,
 } from "react-native";
-import { Icon } from "react-native-paper";
+import { Icon, Menu } from "react-native-paper";
 import { getDB, readFridgeDB } from "../../services/sqlite";
 import AddFoodModal from "../components/AddFoodModal";
 import FridgeCard from "../components/FridgeCard";
@@ -21,6 +21,9 @@ const Index = () => {
   const [fridgeData, setFridgeData] = useState([]);
   const [filteredData, setFilteredData] = useState([]);
 
+  const [menuVisible, setMenuVisible] = useState(false);
+  const [personal, setPersonal] = useState(true);
+
   useEffect(() => {
     const init = async () => {
       const dbInstance = await getDB();
@@ -32,15 +35,53 @@ const Index = () => {
   useLayoutEffect(() => {
     navigation.setOptions({
       headerRight: () => (
-        <TouchableOpacity
-          className="mr-6"
-          onPress={() => router.push("./scan/scanner")}
-        >
-          <Icon source="barcode-scan" color="#000" size={30} />
-        </TouchableOpacity>
+        <View className="flex-1 flex-row justify-between items-center">
+          <Menu
+            visible={menuVisible}
+            onDismiss={() => setMenuVisible(false)}
+            anchor={
+              <TouchableOpacity
+                className="flex-row pt-[1px]"
+                onPress={() => setMenuVisible(true)}
+              >
+                <Icon source="chevron-down" color="#000" size={24} />
+                <Text className="ml-1 pt-[1px]">
+                  {personal ? "Personal" : "Household"}
+                </Text>
+              </TouchableOpacity>
+            }
+          >
+            <View>
+              <TouchableOpacity
+                className={`${personal ? "bg-slate-300" : ""}`}
+                onPress={() => {
+                  setPersonal(true);
+                  setMenuVisible(false);
+                }}
+              >
+                <Text className="px-3 py-1">Personal</Text>
+              </TouchableOpacity>
+              <TouchableOpacity
+                className={`${personal ? "" : "bg-slate-300"}`}
+                onPress={() => {
+                  setPersonal(false);
+                  setMenuVisible(false);
+                }}
+              >
+                <Text className="px-3 py-1">Household</Text>
+              </TouchableOpacity>
+            </View>
+          </Menu>
+          <TouchableOpacity
+            className="mr-6"
+            onPress={() => router.push("./scan/scanner")}
+          >
+            <Icon source="barcode-scan" color="#000" size={30} />
+          </TouchableOpacity>
+        </View>
       ),
     });
-  }, [navigation]);
+  }, [navigation, menuVisible]);
 
   useEffect(() => {
     const readData = async () => {
