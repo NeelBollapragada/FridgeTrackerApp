@@ -1,4 +1,3 @@
-// import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useNavigation, useRouter } from "expo-router";
 import { useEffect, useLayoutEffect, useState } from "react";
 import {
@@ -9,6 +8,7 @@ import {
   View,
 } from "react-native";
 import { Icon, Menu } from "react-native-paper";
+import { useAuth } from "../../contexts/AuthContext";
 import { getHouseholdItems } from "../../services/householdUsers";
 import { getDB, readFridgeDB, setDB } from "../../services/sqlite";
 import AddFoodModal from "../components/AddFoodModal";
@@ -18,6 +18,9 @@ import Searchbar from "../components/Searchbar";
 const Index = () => {
   const navigation = useNavigation();
   const router = useRouter();
+
+  const { user } = useAuth();
+
   const [modalVisible, setModalVisible] = useState(false);
   const [database, setDatabase] = useState(null);
   const [fridgeData, setFridgeData] = useState([]);
@@ -25,10 +28,11 @@ const Index = () => {
 
   const [menuVisible, setMenuVisible] = useState(false);
   const [personal, setPersonal] = useState(true);
+  const [householdFridgeData, setHouseholdFridgeData] = useState([]);
+  const [householdFilteredData, setHouseholdFilteredData] = useState([]);
 
   useEffect(() => {
     const init = async () => {
-      // await AsyncStorage.removeItem("prebuilt_db_copied");
       const dbInstance = await getDB();
       await setDB(dbInstance);
       console.log("set db");
@@ -74,8 +78,8 @@ const Index = () => {
                 onPress={async () => {
                   setPersonal(false);
                   const items = await getHouseholdItems();
-                  console.log(items);
-                  console.log(JSON.stringify(items, null, 2));
+                  setHouseholdFridgeData(items);
+                  setHouseholdFilteredData(items);
                   setMenuVisible(false);
                 }}
               >
@@ -97,17 +101,25 @@ const Index = () => {
   useEffect(() => {
     const readData = async () => {
       if (!database) return;
-      const results = await readFridgeDB(database);
-      setFridgeData(results);
-      setFilteredData(results);
+      if (personal) {
+        const results = await readFridgeDB(database);
+        setFridgeData(results);
+        setFilteredData(results);
+      }
     };
     readData();
-  }, [database]);
+  }, [database, personal]);
 
   return (
     <View className="flex-1 bg-[#f2f2f2]">
       <View className="bg-white py-2 px-3 flex-row shadow-xl">
-        <Searchbar fridgeData={fridgeData} setFilteredData={setFilteredData} />
+        <Searchbar
+          fridgeData={personal ? fridgeData : householdFridgeData}
+          setFilteredData={
+            personal ? setFilteredData : setHouseholdFilteredData
+          }
+          household={!personal}
+        />
         <TouchableOpacity
           className="bg-blue-500 w-[18%] ml-2 items-center justify-center rounded-xl"
           onPress={() => setModalVisible(true)}
@@ -125,24 +137,67 @@ const Index = () => {
           setFilteredData={setFilteredData}
         />
       )}
-      {fridgeData.length === 0 ? (
+      {personal ? (
+        fridgeData.length === 0 ? (
+          <View className="flex-1 justify-center items-center">
+            <Text className="text-gray-700 font-normal">
+              Nothing in fridge.
+            </Text>
+          </View>
+        ) : (
+          <FlatList
+            data={filteredData}
+            renderItem={({ item }) => (
+              <FridgeCard
+                fridge_item={item}
+                db={database}
+                fridgeData={fridgeData}
+                setFridgeData={setFridgeData}
+                filteredData={filteredData}
+                setFilteredData={setFilteredData}
+              />
+            )}
+            keyExtractor={(item) => item.id}
+            ListFooterComponent={<View className="h-32" />}
+          />
+        )
+      ) : householdFridgeData.length === 0 ? (
         <View className="flex-1 justify-center items-center">
-          <Text className="text-gray-700 font-normal">Nothing in fridge.</Text>
+          <Text className="text-gray-700 font-normal">
+            Nothing in household fridge.
+          </Text>
         </View>
       ) : (
         <FlatList
-          data={filteredData}
+          data={householdFilteredData}
           renderItem={({ item }) => (
-            <FridgeCard
-              fridge_item={item}
-              db={database}
-              fridgeData={fridgeData}
-              setFridgeData={setFridgeData}
-              filteredData={filteredData}
-              setFilteredData={setFilteredData}
-            />
+            <View>
+              <View className="flex-row">
+                <Text className="font-semibold text-xl ml-4 mt-2">
+                  {item.name}
+                </Text>
+                {user.name === item.name && (
+                  <Text className="italic font-semibold text-xl mt-2">
+                    {" "}
+                    (You)
+                  </Text>
+                )}
+              </View>
+              {item.items.map((fridgeItem) => (
+                <FridgeCard
+                  key={`${item.name}_${fridgeItem.sqlite_id}`}
+                  fridge_item={fridgeItem}
+                  db={database}
+                  fridgeData={householdFridgeData}
+                  setFridgeData={setHouseholdFridgeData}
+                  filteredData={householdFilteredData}
+                  setFilteredData={setHouseholdFilteredData}
+                  household
+                />
+              ))}
+            </View>
           )}
-          keyExtractor={(item) => item.id}
+          keyExtractor={(item) => item.name}
           ListFooterComponent={<View className="h-32" />}
         />
       )}

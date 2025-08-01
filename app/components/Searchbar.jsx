@@ -2,7 +2,7 @@ import { useState } from "react";
 import { StyleSheet, TextInput, View } from "react-native";
 import { Icon } from "react-native-paper";
 
-const Searchbar = ({ fridgeData, setFilteredData }) => {
+const Searchbar = ({ fridgeData, setFilteredData, household }) => {
   const [input, setInput] = useState("");
 
   return (
@@ -12,10 +12,24 @@ const Searchbar = ({ fridgeData, setFilteredData }) => {
         value={input}
         onChangeText={(newInput) => {
           setInput(newInput.trim().toLowerCase());
-          const query = fridgeData.filter((item) =>
-            item.name.toLowerCase().includes(newInput.toLowerCase())
-          );
-          setFilteredData(query);
+          if (household) {
+            const query = fridgeData.map((item) => {
+              const filtered = item.items.filter((food) =>
+                food.name.toLowerCase().includes(newInput.toLowerCase())
+              );
+              return {
+                name: item.name,
+                items: filtered,
+              };
+            });
+
+            setFilteredData(query);
+          } else {
+            const query = fridgeData.filter((item) =>
+              item.name.toLowerCase().includes(newInput.toLowerCase())
+            );
+            setFilteredData(query);
+          }
         }}
         className="flex-1 ml-3"
         placeholderTextColor="#222937"
