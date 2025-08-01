@@ -1,5 +1,5 @@
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import filteredFood from "../assets/json/filtered_food.json";
+// import filteredFood from "../assets/json/filtered_food.json";
 import { getDB } from "./sqlite";
 
 export const preloadFoodItems = async () => {
@@ -10,6 +10,7 @@ export const preloadFoodItems = async () => {
       return;
     }
 
+    const filteredFood = [];
     const db = await getDB();
     console.log(`Inserting ${filteredFood.length} food items...`);
 

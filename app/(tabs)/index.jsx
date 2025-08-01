@@ -8,7 +8,8 @@ import {
   View,
 } from "react-native";
 import { Icon, Menu } from "react-native-paper";
-import { getDB, readFridgeDB } from "../../services/sqlite";
+import { getHouseholdItems } from "../../services/householdUsers";
+import { getDB, readFridgeDB, setDB } from "../../services/sqlite";
 import AddFoodModal from "../components/AddFoodModal";
 import FridgeCard from "../components/FridgeCard";
 import Searchbar from "../components/Searchbar";
@@ -27,8 +28,13 @@ const Index = () => {
   useEffect(() => {
     const init = async () => {
       const dbInstance = await getDB();
+      await setDB(dbInstance);
+      console.log("set db");
       setDatabase(dbInstance);
+      console.log("loaded food items");
     };
+
+    console.log("loading");
     init();
   }, []);
 
@@ -63,8 +69,10 @@ const Index = () => {
               </TouchableOpacity>
               <TouchableOpacity
                 className={`${personal ? "" : "bg-slate-300"}`}
-                onPress={() => {
+                onPress={async () => {
                   setPersonal(false);
+                  const items = await getHouseholdItems();
+                  console.log(items);
                   setMenuVisible(false);
                 }}
               >
