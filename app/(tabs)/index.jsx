@@ -1,3 +1,4 @@
+// import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useNavigation, useRouter } from "expo-router";
 import { useEffect, useLayoutEffect, useState } from "react";
 import {
@@ -27,6 +28,7 @@ const Index = () => {
 
   useEffect(() => {
     const init = async () => {
+      // await AsyncStorage.removeItem("prebuilt_db_copied");
       const dbInstance = await getDB();
       await setDB(dbInstance);
       console.log("set db");
@@ -73,6 +75,7 @@ const Index = () => {
                   setPersonal(false);
                   const items = await getHouseholdItems();
                   console.log(items);
+                  console.log(JSON.stringify(items, null, 2));
                   setMenuVisible(false);
                 }}
               >

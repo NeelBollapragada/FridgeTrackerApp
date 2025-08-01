@@ -293,8 +293,9 @@ export const syncCloudFridgeDB = async (db, fridgeItems) => {
 
     for (const item of fridgeItems) {
       await db.runAsync(
-        "INSERT INTO fridge_items (code, name, image_url, energy_kcal, protein, carbohydrates, fat_total, fat_saturated, fat_unsaturated, expiry_date, quantity, unit) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
+        "INSERT INTO fridge_items (id, code, name, image_url, energy_kcal, protein, carbohydrates, fat_total, fat_saturated, fat_unsaturated, expiry_date, quantity, unit) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
         [
+          item.sqlite_id,
           item.code,
           item.name,
           item.image_url,
