@@ -1,13 +1,35 @@
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import { Asset } from "expo-asset";
+import * as FileSystem from "expo-file-system";
 import * as SQLite from "expo-sqlite";
 
+const DB_NAME = "food_prebuilt.db";
 let dbInstance = null;
 
 export const getDB = async () => {
   try {
-    if (!dbInstance) {
-      dbInstance = await SQLite.openDatabaseAsync("listDB");
+    if (dbInstance) return dbInstance;
+
+    const alreadyCopied = await AsyncStorage.getItem("prebuilt_db_copied");
+
+    if (alreadyCopied !== "true") {
+      const asset = Asset.fromModule(require("../assets/db/food_prebuilt.db"));
+      await asset.downloadAsync();
+      const dbDir = `${FileSystem.documentDirectory}SQLite`;
+      const dbFile = `${dbDir}/${DB_NAME}`;
+      const dirInfo = await FileSystem.getInfoAsync(dbDir);
+      if (!dirInfo.exists) {
+        await FileSystem.makeDirectoryAsync(dbDir, { intermediates: true });
+      }
+      await FileSystem.copyAsync({
+        from: asset.localUri,
+        to: dbFile,
+      });
+      await AsyncStorage.setItem("prebuilt_db_copied", "true");
+      console.log("✅ Copied prebuilt DB to device");
     }
+
+    dbInstance = await SQLite.openDatabaseAsync(DB_NAME);
     return dbInstance;
   } catch (error) {
     console.error("1", error);
@@ -19,19 +41,6 @@ export const setDB = async (db) => {
     await db.execAsync(`PRAGMA journal_mode = WAL;`);
     await db.execAsync(
       `CREATE TABLE IF NOT EXISTS shopping (id INTEGER PRIMARY KEY NOT NULL, item TEXT NOT NULL);`
-    );
-    await db.execAsync(
-      `CREATE TABLE IF NOT EXISTS food_items (
-        code TEXT PRIMARY KEY NOT NULL, 
-        name TEXT NOT NULL,
-        image_url TEXT, 
-        energy_kcal REAL,
-        protein REAL,
-        carbohydrates REAL,
-        fat_total REAL,
-        fat_saturated REAL,
-        fat_unsaturated REAL
-    );`
     );
     await db.execAsync(
       `CREATE TABLE IF NOT EXISTS fridge_items (
