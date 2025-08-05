@@ -2,6 +2,7 @@ import { useNavigation, useRouter } from "expo-router";
 import { useEffect, useLayoutEffect, useState } from "react";
 import {
   FlatList,
+  Modal,
   StyleSheet,
   Text,
   TouchableOpacity,
@@ -30,6 +31,7 @@ const Index = () => {
   const [personal, setPersonal] = useState(true);
   const [householdFridgeData, setHouseholdFridgeData] = useState([]);
   const [householdFilteredData, setHouseholdFilteredData] = useState([]);
+  const [messageVisible, setMessageVisible] = useState(false);
 
   useEffect(() => {
     const init = async () => {
@@ -76,8 +78,16 @@ const Index = () => {
               <TouchableOpacity
                 className={`${personal ? "" : "bg-slate-300"}`}
                 onPress={async () => {
-                  setPersonal(false);
+                  if (!user) {
+                    setMessageVisible(true);
+                    return;
+                  }
                   const items = await getHouseholdItems();
+                  if (!items || items.error) {
+                    setMessageVisible(true);
+                    return;
+                  }
+                  setPersonal(false);
                   setHouseholdFridgeData(items);
                   setHouseholdFilteredData(items);
                   setMenuVisible(false);
@@ -204,6 +214,34 @@ const Index = () => {
           ListFooterComponent={<View className="h-32" />}
         />
       )}
+      <Modal
+        animationType="fade"
+        visible={messageVisible}
+        transparent
+        onRequestClose={() => setMessageVisible(false)}
+      >
+        <View className="flex-1 justify-center items-center bg-black/40">
+          <View className="bg-white w-[70%] h-auto rounded-lg">
+            <Text className="font-semibold text-xl px-4 py-3">
+              Not part of Household
+            </Text>
+            <Text className="px-4 text-justify">
+              You need to be logged in and a part of a household to use this
+              feature.
+            </Text>
+            <TouchableOpacity
+              className="bg-blue-500 rounded-lg ml-4 my-4 mr-auto"
+              onPress={() => {
+                setMenuVisible(false);
+                setMessageVisible(false);
+                router.replace("./profile");
+              }}
+            >
+              <Text className="text-white px-3 py-2">Go to Profile</Text>
+            </TouchableOpacity>
+          </View>
+        </View>
+      </Modal>
     </View>
   );
 };
