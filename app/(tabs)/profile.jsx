@@ -114,7 +114,6 @@ const Profile = () => {
     }
 
     if (response?.error) {
-      console.log(response.error);
       if (
         response.error ===
         "Invalid `password` param: Password must be between 8 and 265 characters long, and should not be one of the commonly used password."

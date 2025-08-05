@@ -41,14 +41,11 @@ const Index = () => {
       setLoading(true);
       const dbInstance = await getDB();
       await setDB(dbInstance);
-      console.log("set db");
       setDatabase(dbInstance);
-      console.log("loaded food items");
       setFullLoading(false);
       setLoading(false);
     };
 
-    console.log("loading");
     init();
   }, []);
 
