@@ -10,16 +10,17 @@ import {
 } from "react-native";
 import DateTimePickerModal from "react-native-modal-datetime-picker";
 import { Icon, Menu } from "react-native-paper";
+import { useAuth } from "../../contexts/AuthContext";
+import {
+  removeCloudFridge,
+  updateCloudFridge,
+} from "../../services/fridgeSync";
 import {
   deleteFridgeItemDB,
   updateFridgeExpiryDB,
   updateFridgeQuantityDB,
   updateFridgeUnitDB,
 } from "../../services/sqlite";
-import {
-  removeCloudFridge,
-  updateCloudFridge,
-} from "../../services/fridgeSync";
 
 const FridgeCard = ({
   fridge_item,
@@ -28,6 +29,7 @@ const FridgeCard = ({
   setFridgeData,
   filteredData,
   setFilteredData,
+  household,
 }) => {
   const [visible, setVisible] = useState(false);
   const [quantity, setQuantity] = useState(1);
@@ -36,6 +38,8 @@ const FridgeCard = ({
   const [unit, setUnit] = useState("");
   const [expiry, setExpiry] = useState("");
   const [datePickerVisible, setDatePickerVisible] = useState(false);
+
+  const { user } = useAuth();
 
   const handleClose = () => {
     Alert.alert(
@@ -50,16 +54,29 @@ const FridgeCard = ({
           text: "Delete",
           style: "destructive",
           onPress: async () => {
-            const currData = fridgeData.filter(
-              (item) => item.id !== fridge_item.id
-            );
+            const currData = fridgeData.filter((item) => {
+              if (household) {
+                return item.sqlite_id !== fridge_item.sqlite_id;
+              } else {
+                return item.id !== fridge_item.id;
+              }
+            });
             setFridgeData(currData);
-            const currQuery = filteredData.filter(
-              (item) => item.id !== fridge_item.id
-            );
+            const currQuery = filteredData.filter((item) => {
+              if (household) {
+                return item.sqlite_id !== fridge_item.sqlite_id;
+              } else {
+                return item.id !== fridge_item.id;
+              }
+            });
             setFilteredData(currQuery);
-            await deleteFridgeItemDB(db, fridge_item.id);
-            await removeCloudFridge(fridge_item.id);
+            if (household) {
+              await deleteFridgeItemDB(db, fridge_item.sqlite_id);
+              await removeCloudFridge(fridge_item.sqlite_id);
+            } else {
+              await deleteFridgeItemDB(db, fridge_item.id);
+              await removeCloudFridge(fridge_item.id);
+            }
           },
         },
       ]
@@ -74,15 +91,25 @@ const FridgeCard = ({
   const handleQuantity = async (newQuantity) => {
     setQuantity(newQuantity);
     fridge_item.quantity = newQuantity;
-    await updateFridgeQuantityDB(db, fridge_item.id, newQuantity);
-    await updateCloudFridge(fridge_item.id, newQuantity, "quantity");
+    if (household) {
+      await updateFridgeQuantityDB(db, fridge_item.sqlite_id, newQuantity);
+      await updateCloudFridge(fridge_item.sqlite_id, newQuantity, "quantity");
+    } else {
+      await updateFridgeQuantityDB(db, fridge_item.id, newQuantity);
+      await updateCloudFridge(fridge_item.id, newQuantity, "quantity");
+    }
   };
 
   const handleUnit = async (newUnit) => {
     setUnit(newUnit);
     fridge_item.unit = newUnit;
-    await updateFridgeUnitDB(db, fridge_item.id, newUnit);
-    await updateCloudFridge(fridge_item.id, newUnit, "unit");
+    if (household) {
+      await updateFridgeUnitDB(db, fridge_item.sqlite_id, newUnit);
+      await updateCloudFridge(fridge_item.sqlite_id, newUnit, "unit");
+    } else {
+      await updateFridgeUnitDB(db, fridge_item.id, newUnit);
+      await updateCloudFridge(fridge_item.id, newUnit, "unit");
+    }
   };
 
   const handleDate = async (newDate) => {
@@ -95,9 +122,17 @@ const FridgeCard = ({
 
     fridge_item.expiry_date = expires;
     setExpiry(dayExpiry(expires));
-    await updateFridgeExpiryDB(db, fridge_item.id, expires);
+    if (household) {
+      await updateFridgeExpiryDB(db, fridge_item.sqlite_id, expires);
+    } else {
+      await updateFridgeExpiryDB(db, fridge_item.id, expires);
+    }
     setDatePickerVisible(false);
-    await updateCloudFridge(fridge_item.id, expires, "expiry_date");
+    if (household) {
+      await updateCloudFridge(fridge_item.sqlite_id, expires, "expiry_date");
+    } else {
+      await updateCloudFridge(fridge_item.id, expires, "expiry_date");
+    }
   };
 
   const checkExpiry = (expiry) => {
@@ -174,35 +209,66 @@ const FridgeCard = ({
           <Text className="text-black font-bold mb-2 w-[90%]" numberOfLines={1}>
             {fridge_item.name}
           </Text>
-          <TouchableOpacity onPress={handleClose}>
-            <Icon source="close" size={22} />
-          </TouchableOpacity>
+          {!(household && user && user.$id !== fridge_item.user_id) && (
+            <TouchableOpacity onPress={handleClose}>
+              <Icon source="close" size={22} />
+            </TouchableOpacity>
+          )}
         </View>
         <View className="flex-row justify-between items-center mb-2">
-          <TouchableOpacity onPress={() => setVisible(true)}>
-            <Text className="mr-2">{`Quantity: ${fridge_item.quantity} ${fridge_item.unit}`}</Text>
-          </TouchableOpacity>
-          <TouchableOpacity
-            className={`border border-[1px] rounded-full ${fridge_item.expiry_date === "" ? "mr-16" : "mr-4 w-[54%]"} ${fridge_item.expiry_date !== "" ? (checkExpiry(fridge_item.expiry_date) === "red" ? "border-red-950 bg-red-300" : checkExpiry(fridge_item.expiry_date) === "yellow" ? "border-amber-950 bg-amber-100" : checkExpiry(fridge_item.expiry_date) === "expired" ? "border-orange-950 bg-orange-300" : "border-green-950 bg-green-300") : "border-gray-500"}`}
-            onPress={() => setDatePickerVisible(true)}
-          >
-            {fridge_item.expiry_date === "" ? (
-              <Text className="px-3 py-1">Add Expiry</Text>
-            ) : (
-              <View className="flex-row px-3 py-1">
-                <Text>Expires: </Text>
-                <Text
-                  className={
-                    expiry === "Today" || expiry === "Expired"
-                      ? "font-bold"
-                      : ""
-                  }
-                >
-                  {expiry}
-                </Text>
-              </View>
-            )}
-          </TouchableOpacity>
+          {household && user && user.$id !== fridge_item.user_id ? (
+            <View>
+              <Text className="mr-2">{`Quantity: ${fridge_item.quantity} ${fridge_item.unit}`}</Text>
+            </View>
+          ) : (
+            <TouchableOpacity onPress={() => setVisible(true)}>
+              <Text className="mr-2">{`Quantity: ${fridge_item.quantity} ${fridge_item.unit}`}</Text>
+            </TouchableOpacity>
+          )}
+          {household && user && user.$id !== fridge_item.user_id ? (
+            <View
+              className={`border border-[1px] rounded-full ${fridge_item.expiry_date === "" ? "mr-16" : "mr-4 w-[54%]"} ${fridge_item.expiry_date !== "" ? (checkExpiry(fridge_item.expiry_date) === "red" ? "border-red-950 bg-red-300" : checkExpiry(fridge_item.expiry_date) === "yellow" ? "border-amber-950 bg-amber-100" : checkExpiry(fridge_item.expiry_date) === "expired" ? "border-orange-950 bg-orange-300" : "border-green-950 bg-green-300") : "border-gray-500"}`}
+            >
+              {fridge_item.expiry_date === "" ? (
+                <Text className="px-3 py-1">Add Expiry</Text>
+              ) : (
+                <View className="flex-row px-3 py-1">
+                  <Text>Expires: </Text>
+                  <Text
+                    className={
+                      expiry === "Today" || expiry === "Expired"
+                        ? "font-bold"
+                        : ""
+                    }
+                  >
+                    {expiry}
+                  </Text>
+                </View>
+              )}
+            </View>
+          ) : (
+            <TouchableOpacity
+              className={`border border-[1px] rounded-full ${fridge_item.expiry_date === "" ? "mr-16" : "mr-4 w-[54%]"} ${fridge_item.expiry_date !== "" ? (checkExpiry(fridge_item.expiry_date) === "red" ? "border-red-950 bg-red-300" : checkExpiry(fridge_item.expiry_date) === "yellow" ? "border-amber-950 bg-amber-100" : checkExpiry(fridge_item.expiry_date) === "expired" ? "border-orange-950 bg-orange-300" : "border-green-950 bg-green-300") : "border-gray-500"}`}
+              onPress={() => setDatePickerVisible(true)}
+            >
+              {fridge_item.expiry_date === "" ? (
+                <Text className="px-3 py-1">Add Expiry</Text>
+              ) : (
+                <View className="flex-row px-3 py-1">
+                  <Text>Expires: </Text>
+                  <Text
+                    className={
+                      expiry === "Today" || expiry === "Expired"
+                        ? "font-bold"
+                        : ""
+                    }
+                  >
+                    {expiry}
+                  </Text>
+                </View>
+              )}
+            </TouchableOpacity>
+          )}
         </View>
         <Menu
           visible={visible}

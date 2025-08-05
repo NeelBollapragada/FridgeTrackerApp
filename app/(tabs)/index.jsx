@@ -2,12 +2,14 @@ import { useNavigation, useRouter } from "expo-router";
 import { useEffect, useLayoutEffect, useState } from "react";
 import {
   FlatList,
+  Modal,
   StyleSheet,
   Text,
   TouchableOpacity,
   View,
 } from "react-native";
 import { Icon, Menu } from "react-native-paper";
+import { useAuth } from "../../contexts/AuthContext";
 import { getHouseholdItems } from "../../services/householdUsers";
 import { getDB, readFridgeDB, setDB } from "../../services/sqlite";
 import AddFoodModal from "../components/AddFoodModal";
@@ -17,6 +19,9 @@ import Searchbar from "../components/Searchbar";
 const Index = () => {
   const navigation = useNavigation();
   const router = useRouter();
+
+  const { user } = useAuth();
+
   const [modalVisible, setModalVisible] = useState(false);
   const [database, setDatabase] = useState(null);
   const [fridgeData, setFridgeData] = useState([]);
@@ -24,6 +29,9 @@ const Index = () => {
 
   const [menuVisible, setMenuVisible] = useState(false);
   const [personal, setPersonal] = useState(true);
+  const [householdFridgeData, setHouseholdFridgeData] = useState([]);
+  const [householdFilteredData, setHouseholdFilteredData] = useState([]);
+  const [messageVisible, setMessageVisible] = useState(false);
 
   useEffect(() => {
     const init = async () => {
@@ -70,9 +78,18 @@ const Index = () => {
               <TouchableOpacity
                 className={`${personal ? "" : "bg-slate-300"}`}
                 onPress={async () => {
-                  setPersonal(false);
+                  if (!user) {
+                    setMessageVisible(true);
+                    return;
+                  }
                   const items = await getHouseholdItems();
-                  console.log(items);
+                  if (!items || items.error) {
+                    setMessageVisible(true);
+                    return;
+                  }
+                  setPersonal(false);
+                  setHouseholdFridgeData(items);
+                  setHouseholdFilteredData(items);
                   setMenuVisible(false);
                 }}
               >
@@ -94,17 +111,25 @@ const Index = () => {
   useEffect(() => {
     const readData = async () => {
       if (!database) return;
-      const results = await readFridgeDB(database);
-      setFridgeData(results);
-      setFilteredData(results);
+      if (personal) {
+        const results = await readFridgeDB(database);
+        setFridgeData(results);
+        setFilteredData(results);
+      }
     };
     readData();
-  }, [database]);
+  }, [database, personal]);
 
   return (
     <View className="flex-1 bg-[#f2f2f2]">
       <View className="bg-white py-2 px-3 flex-row shadow-xl">
-        <Searchbar fridgeData={fridgeData} setFilteredData={setFilteredData} />
+        <Searchbar
+          fridgeData={personal ? fridgeData : householdFridgeData}
+          setFilteredData={
+            personal ? setFilteredData : setHouseholdFilteredData
+          }
+          household={!personal}
+        />
         <TouchableOpacity
           className="bg-blue-500 w-[18%] ml-2 items-center justify-center rounded-xl"
           onPress={() => setModalVisible(true)}
@@ -116,33 +141,107 @@ const Index = () => {
         <AddFoodModal
           modalVisible={modalVisible}
           setModalVisible={setModalVisible}
-          fridgeData={fridgeData}
-          setFridgeData={setFridgeData}
-          filteredData={filteredData}
-          setFilteredData={setFilteredData}
+          fridgeData={personal ? fridgeData : householdFridgeData}
+          setFridgeData={personal ? setFridgeData : setHouseholdFridgeData}
+          filteredData={personal ? filteredData : householdFilteredData}
+          setFilteredData={
+            personal ? setFilteredData : setHouseholdFilteredData
+          }
+          household={!personal}
         />
       )}
-      {fridgeData.length === 0 ? (
+      {personal ? (
+        fridgeData.length === 0 ? (
+          <View className="flex-1 justify-center items-center">
+            <Text className="text-gray-700 font-normal">
+              Nothing in fridge.
+            </Text>
+          </View>
+        ) : (
+          <FlatList
+            data={filteredData}
+            renderItem={({ item }) => (
+              <FridgeCard
+                fridge_item={item}
+                db={database}
+                fridgeData={fridgeData}
+                setFridgeData={setFridgeData}
+                filteredData={filteredData}
+                setFilteredData={setFilteredData}
+              />
+            )}
+            keyExtractor={(item) => item.id}
+            ListFooterComponent={<View className="h-32" />}
+          />
+        )
+      ) : householdFridgeData.length === 0 ? (
         <View className="flex-1 justify-center items-center">
-          <Text className="text-gray-700 font-normal">Nothing in fridge.</Text>
+          <Text className="text-gray-700 font-normal">
+            Nothing in household fridge.
+          </Text>
         </View>
       ) : (
         <FlatList
-          data={filteredData}
+          data={householdFilteredData}
           renderItem={({ item }) => (
-            <FridgeCard
-              fridge_item={item}
-              db={database}
-              fridgeData={fridgeData}
-              setFridgeData={setFridgeData}
-              filteredData={filteredData}
-              setFilteredData={setFilteredData}
-            />
+            <View>
+              <View className="flex-row">
+                <Text className="font-semibold text-xl ml-4 mt-2">
+                  {item.name}
+                </Text>
+                {user.name === item.name && (
+                  <Text className="italic font-semibold text-xl mt-2">
+                    {" "}
+                    (You)
+                  </Text>
+                )}
+              </View>
+              {item.items.map((fridgeItem) => (
+                <FridgeCard
+                  key={`${item.name}_${fridgeItem.sqlite_id}`}
+                  fridge_item={fridgeItem}
+                  db={database}
+                  fridgeData={householdFridgeData}
+                  setFridgeData={setHouseholdFridgeData}
+                  filteredData={householdFilteredData}
+                  setFilteredData={setHouseholdFilteredData}
+                  household
+                />
+              ))}
+            </View>
           )}
-          keyExtractor={(item) => item.id}
+          keyExtractor={(item) => item.name}
           ListFooterComponent={<View className="h-32" />}
         />
       )}
+      <Modal
+        animationType="fade"
+        visible={messageVisible}
+        transparent
+        onRequestClose={() => setMessageVisible(false)}
+      >
+        <View className="flex-1 justify-center items-center bg-black/40">
+          <View className="bg-white w-[70%] h-auto rounded-lg">
+            <Text className="font-semibold text-xl px-4 py-3">
+              Not part of Household
+            </Text>
+            <Text className="px-4 text-justify">
+              You need to be logged in and a part of a household to use this
+              feature.
+            </Text>
+            <TouchableOpacity
+              className="bg-blue-500 rounded-lg ml-4 my-4 mr-auto"
+              onPress={() => {
+                setMenuVisible(false);
+                setMessageVisible(false);
+                router.replace("./profile");
+              }}
+            >
+              <Text className="text-white px-3 py-2">Go to Profile</Text>
+            </TouchableOpacity>
+          </View>
+        </View>
+      </Modal>
     </View>
   );
 };

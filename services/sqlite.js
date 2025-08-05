@@ -11,13 +11,14 @@ export const getDB = async () => {
     if (dbInstance) return dbInstance;
 
     const alreadyCopied = await AsyncStorage.getItem("prebuilt_db_copied");
+    const dbDir = `${FileSystem.documentDirectory}SQLite`;
+    const dbFile = `${dbDir}/${DB_NAME}`;
+    const dirInfo = await FileSystem.getInfoAsync(dbDir);
 
-    if (alreadyCopied !== "true") {
+    if (alreadyCopied !== "true" || !dirInfo.exists) {
       const asset = Asset.fromModule(require("../assets/db/food_prebuilt.db"));
       await asset.downloadAsync();
-      const dbDir = `${FileSystem.documentDirectory}SQLite`;
-      const dbFile = `${dbDir}/${DB_NAME}`;
-      const dirInfo = await FileSystem.getInfoAsync(dbDir);
+
       if (!dirInfo.exists) {
         await FileSystem.makeDirectoryAsync(dbDir, { intermediates: true });
       }
@@ -30,6 +31,7 @@ export const getDB = async () => {
     }
 
     dbInstance = await SQLite.openDatabaseAsync(DB_NAME);
+
     return dbInstance;
   } catch (error) {
     console.error("1", error);
@@ -293,8 +295,9 @@ export const syncCloudFridgeDB = async (db, fridgeItems) => {
 
     for (const item of fridgeItems) {
       await db.runAsync(
-        "INSERT INTO fridge_items (code, name, image_url, energy_kcal, protein, carbohydrates, fat_total, fat_saturated, fat_unsaturated, expiry_date, quantity, unit) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
+        "INSERT INTO fridge_items (id, code, name, image_url, energy_kcal, protein, carbohydrates, fat_total, fat_saturated, fat_unsaturated, expiry_date, quantity, unit) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
         [
+          item.sqlite_id,
           item.code,
           item.name,
           item.image_url,
