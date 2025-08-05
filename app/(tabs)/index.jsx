@@ -8,7 +8,7 @@ import {
   TouchableOpacity,
   View,
 } from "react-native";
-import { Icon, Menu } from "react-native-paper";
+import { ActivityIndicator, Icon, Menu } from "react-native-paper";
 import { useAuth } from "../../contexts/AuthContext";
 import { getHouseholdItems } from "../../services/householdUsers";
 import { getDB, readFridgeDB, setDB } from "../../services/sqlite";
@@ -21,6 +21,8 @@ const Index = () => {
   const router = useRouter();
 
   const { user } = useAuth();
+
+  const [loading, setLoading] = useState(false);
 
   const [modalVisible, setModalVisible] = useState(false);
   const [database, setDatabase] = useState(null);
@@ -35,11 +37,13 @@ const Index = () => {
 
   useEffect(() => {
     const init = async () => {
+      setLoading(true);
       const dbInstance = await getDB();
       await setDB(dbInstance);
       console.log("set db");
       setDatabase(dbInstance);
       console.log("loaded food items");
+      setLoading(false);
     };
 
     console.log("loading");
@@ -82,15 +86,19 @@ const Index = () => {
                     setMessageVisible(true);
                     return;
                   }
+                  setLoading(true);
                   const items = await getHouseholdItems();
                   if (!items || items.error) {
                     setMessageVisible(true);
+                    setLoading(false);
+                    setMenuVisible(false);
                     return;
                   }
                   setPersonal(false);
                   setHouseholdFridgeData(items);
                   setHouseholdFilteredData(items);
                   setMenuVisible(false);
+                  setLoading(false);
                 }}
               >
                 <Text className="px-3 py-1">Household</Text>
@@ -111,11 +119,13 @@ const Index = () => {
   useEffect(() => {
     const readData = async () => {
       if (!database) return;
+      setLoading(true);
       if (personal) {
         const results = await readFridgeDB(database);
         setFridgeData(results);
         setFilteredData(results);
       }
+      setLoading(false);
     };
     readData();
   }, [database, personal]);
@@ -150,7 +160,11 @@ const Index = () => {
           household={!personal}
         />
       )}
-      {personal ? (
+      {loading ? (
+        <View className="m-auto">
+          <ActivityIndicator animating color="#6b7280" />
+        </View>
+      ) : personal ? (
         fridgeData.length === 0 ? (
           <View className="flex-1 justify-center items-center">
             <Text className="text-gray-700 font-normal">
@@ -214,34 +228,46 @@ const Index = () => {
           ListFooterComponent={<View className="h-32" />}
         />
       )}
-      <Modal
-        animationType="fade"
-        visible={messageVisible}
-        transparent
-        onRequestClose={() => setMessageVisible(false)}
-      >
-        <View className="flex-1 justify-center items-center bg-black/40">
-          <View className="bg-white w-[70%] h-auto rounded-lg">
-            <Text className="font-semibold text-xl px-4 py-3">
-              Not part of Household
-            </Text>
-            <Text className="px-4 text-justify">
-              You need to be logged in and a part of a household to use this
-              feature.
-            </Text>
-            <TouchableOpacity
-              className="bg-blue-500 rounded-lg ml-4 my-4 mr-auto"
-              onPress={() => {
-                setMenuVisible(false);
-                setMessageVisible(false);
-                router.replace("./profile");
-              }}
-            >
-              <Text className="text-white px-3 py-2">Go to Profile</Text>
-            </TouchableOpacity>
+      {messageVisible && (
+        <Modal
+          animationType="fade"
+          visible={messageVisible}
+          transparent
+          onRequestClose={() => setMessageVisible(false)}
+        >
+          <View className="flex-1 justify-center items-center bg-black/40">
+            <View className="bg-white w-[70%] h-auto rounded-lg">
+              <View className="flex-row justify-between">
+                <Text className="font-semibold text-xl px-4 py-3">
+                  Not part of Household
+                </Text>
+                <TouchableOpacity
+                  className="mt-1 mr-1"
+                  onPress={() => {
+                    setMessageVisible(false);
+                  }}
+                >
+                  <Icon source="close" size={24} />
+                </TouchableOpacity>
+              </View>
+              <Text className="px-4 text-justify">
+                You need to be logged in and a part of a household to use this
+                feature.
+              </Text>
+              <TouchableOpacity
+                className="bg-blue-500 rounded-lg ml-4 my-4 mr-auto"
+                onPress={() => {
+                  setMenuVisible(false);
+                  setMessageVisible(false);
+                  router.replace("./profile");
+                }}
+              >
+                <Text className="text-white px-3 py-2">Go to Profile</Text>
+              </TouchableOpacity>
+            </View>
           </View>
-        </View>
-      </Modal>
+        </Modal>
+      )}
     </View>
   );
 };
