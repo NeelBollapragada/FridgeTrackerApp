@@ -77,6 +77,7 @@ const Profile = () => {
         setError("Username is already taken.");
         return;
       }
+      setHousehold(false);
       response = await register(email, password, username.trim());
     } else {
       setLoading(true);
