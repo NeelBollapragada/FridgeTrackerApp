@@ -1,5 +1,6 @@
 import { useState } from "react";
 import {
+  Alert,
   Keyboard,
   StyleSheet,
   TextInput,
@@ -14,6 +15,17 @@ const Promptbox = ({ chats, setChats, setLoading, db }) => {
   const [input, setInput] = useState("");
 
   const handleInput = async () => {
+    if (chats.length >= 10) {
+      Alert.alert(
+        "Maximum Chats Reached",
+        "You have reached your chat limit for today. Check in tomorrow to talk to the recipe assistant.",
+        [{ text: "Ok", style: "cancel" }]
+      );
+      return;
+    }
+
+    console.log(chats.length);
+
     if (input.trim() === "") return;
 
     const newChat = input.trim();

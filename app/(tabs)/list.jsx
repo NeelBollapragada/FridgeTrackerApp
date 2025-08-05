@@ -30,13 +30,22 @@ const List = () => {
     const init = async () => {
       const dbInstance = await getDB();
       setDatabase(dbInstance);
-      const dbContents = await readShoppingDB(dbInstance);
-      setText(dbContents.join("\n"));
     };
     init();
   }, []);
 
   useEffect(() => {
+    const readData = async () => {
+      if (!database) return;
+      const contents = await readShoppingDB(database);
+      setText(contents.join("\n"));
+    };
+
+    readData();
+  }, [database]);
+
+  useEffect(() => {
+    if (!database) return;
     const timeoutId = setTimeout(async () => {
       const shoppingItems = text
         .split("\n")
