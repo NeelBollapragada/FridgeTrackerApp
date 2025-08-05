@@ -24,8 +24,6 @@ const Promptbox = ({ chats, setChats, setLoading, db }) => {
       return;
     }
 
-    console.log(chats.length);
-
     if (input.trim() === "") return;
 
     const newChat = input.trim();
