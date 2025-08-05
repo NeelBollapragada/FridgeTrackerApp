@@ -10,6 +10,8 @@ import {
 } from "react-native";
 import { Icon, Portal, Snackbar } from "react-native-paper";
 import uuid from "react-native-uuid";
+import { useAuth } from "../../contexts/AuthContext";
+import { addCloudFridge } from "../../services/fridgeSync";
 import { searchFood } from "../../services/openFood";
 import {
   getDB,
@@ -27,6 +29,7 @@ const AddFoodModal = ({
   setFridgeData,
   filteredData,
   setFilteredData,
+  household,
 }) => {
   const [database, setDatabase] = useState(null);
   const [query, setQuery] = useState([]);
@@ -43,6 +46,8 @@ const AddFoodModal = ({
   const [newImage, setNewImage] = useState("");
 
   const [snackbar, setSnackbar] = useState(false);
+
+  const { user } = useAuth();
 
   useEffect(() => {
     const init = async () => {
@@ -131,12 +136,34 @@ const AddFoodModal = ({
 
     const newFridgeItem = await insertFridgeItem(database, newItem);
     await insertFoodItemDB(database, newItem);
-    const currData = [...fridgeData, newFridgeItem[0]];
-    setFridgeData(currData);
-    const currQuery = [...filteredData, newFridgeItem[0]];
-    setFilteredData(currQuery);
+    if (household) {
+      const currData = fridgeData.map((elem) => {
+        if (elem.name === user.name) {
+          elem.items.push(newItem[0]);
+        }
+
+        return elem;
+      });
+      setFridgeData(currData);
+      const currQuery = filteredData.map((elem) => {
+        if (elem.name === user.name) {
+          elem.items.push(newItem[0]);
+        }
+
+        return elem;
+      });
+      setFilteredData(currQuery);
+    } else {
+      const currData = [...fridgeData, newFridgeItem[0]];
+      setFridgeData(currData);
+      const currQuery = [...filteredData, newFridgeItem[0]];
+      setFilteredData(currQuery);
+    }
     setNewFood(false);
     setSnackbar(true);
+    if (user) {
+      await addCloudFridge(newFridgeItem[0]);
+    }
   };
 
   return (
@@ -269,6 +296,7 @@ const AddFoodModal = ({
                   setFridgeData={setFridgeData}
                   filteredData={filteredData}
                   setFilteredData={setFilteredData}
+                  household={household}
                 />
               )}
               keyExtractor={(item) => item.code}

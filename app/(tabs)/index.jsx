@@ -131,10 +131,13 @@ const Index = () => {
         <AddFoodModal
           modalVisible={modalVisible}
           setModalVisible={setModalVisible}
-          fridgeData={fridgeData}
-          setFridgeData={setFridgeData}
-          filteredData={filteredData}
-          setFilteredData={setFilteredData}
+          fridgeData={personal ? fridgeData : householdFridgeData}
+          setFridgeData={personal ? setFridgeData : setHouseholdFridgeData}
+          filteredData={personal ? filteredData : householdFilteredData}
+          setFilteredData={
+            personal ? setFilteredData : setHouseholdFilteredData
+          }
+          household={!personal}
         />
       )}
       {personal ? (

@@ -1,6 +1,7 @@
 import { memo, useState } from "react";
 import { Image, Text, TouchableOpacity, View } from "react-native";
 import { Portal, Snackbar } from "react-native-paper";
+import { useAuth } from "../../contexts/AuthContext";
 import { addCloudFridge } from "../../services/fridgeSync";
 import {
   checkFoodItemDB,
@@ -16,7 +17,9 @@ const AddFoodCard = memo(
     setFridgeData,
     filteredData,
     setFilteredData,
+    household,
   }) => {
+    const { user } = useAuth();
     const [snackbar, setSnackbar] = useState(false);
 
     const handleAdd = async () => {
@@ -25,12 +28,41 @@ const AddFoodCard = memo(
       if (!check) {
         await insertFoodItemDB(db, food_item);
       }
-      const currData = [...fridgeData, newItem[0]];
-      setFridgeData(currData);
-      const currQuery = [...filteredData, newItem[0]];
-      setFilteredData(currQuery);
+      if (household) {
+        const currData = fridgeData.map((elem) => {
+          if (elem.name === user.name) {
+            const newItems = [
+              ...elem.items,
+              { ...newItem[0], user_id: user.$id },
+            ];
+            return { name: elem.name, items: newItems };
+          }
+
+          return elem;
+        });
+        setFridgeData(currData);
+        const currQuery = filteredData.map((elem) => {
+          if (elem.name === user.name) {
+            const newItems = [
+              ...elem.items,
+              { ...newItem[0], user_id: user.$id },
+            ];
+            return { name: elem.name, items: newItems };
+          }
+
+          return elem;
+        });
+        setFilteredData(currQuery);
+      } else {
+        const currData = [...fridgeData, newItem[0]];
+        setFridgeData(currData);
+        const currQuery = [...filteredData, newItem[0]];
+        setFilteredData(currQuery);
+      }
       setSnackbar(true);
-      await addCloudFridge(newItem[0]);
+      if (user) {
+        await addCloudFridge(newItem[0]);
+      }
     };
 
     return (
