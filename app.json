@@ -18,7 +18,10 @@
       },
       "edgeToEdgeEnabled": true,
       "package": "com.neelbollapragada.fridgetracker",
-      "permissions": ["CAMERA", "INTERNET"],
+      "permissions": [
+        "CAMERA",
+        "INTERNET"
+      ],
       "versionCode": 1
     },
     "web": {
@@ -43,6 +46,14 @@
     "experiments": {
       "typedRoutes": true
     },
-    "assetBundlePatterns": ["**/*"]
+    "assetBundlePatterns": [
+      "**/*"
+    ],
+    "extra": {
+      "router": {},
+      "eas": {
+        "projectId": "34445d9f-39d5-4c49-880e-0d5bfd210f6e"
+      }
+    }
   }
 }
