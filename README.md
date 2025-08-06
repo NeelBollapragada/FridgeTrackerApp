@@ -1,50 +1,65 @@
-# Welcome to your Expo app 👋
+# Fridge Tracker React Native App
 
-This is an [Expo](https://expo.dev) project created with [`create-expo-app`](https://www.npmjs.com/package/create-expo-app).
+A mobile app for managing what's in your fridge, built to help households stay organized, reduce food waste, and get smart recipe suggestions using AI.
 
-## Get started
+## App Features
 
-1. Install dependencies
+- Offline-first design for basic functionality without internet
+- Search functionality to add food from local database or Open Food Facts
+- AI recipe assistant included with 5 prompts per day
+- Household collaboration mode for shared fridges
+- Shopping list with fridge checking feature
+- Add custom food items which are saved for future reuse
+- Quantity and expiry tracking for every fridge item
+- Cloud sync to keep data across devices and used for household collaboration
 
-   ```bash
-   npm install
-   ```
+## Implementation and Tech Stack
 
-2. Start the app
+- Built with **React Native** using **Expo** and **expo-router**
+- **SQLite** used for offline local storage of fridge, shopping list, AI chats, and food database
+- **Appwrite** used for authentication and backend syncing - used to keep household and fridge data
+- **NodeJS** used for backend functions, deployed on Render
+- **Open Food Facts API** for food search and initial food database
+- **Mistral (via OpenRouter)** for AI recipe chats
+- **NativeWind, Native-Paper** used for styling
+- Fridge CRUD actions work locally offline first then on cloud if online using `@react-native-community/netinfo`
+- Handles multiple users and shared fridge data via household IDs
 
-   ```bash
-   npx expo start
-   ```
+## Usage
 
-In the output, you'll find options to open the app in a
+1. Launch the app
+2. _(Optional)_ Register with a unique username if you want cloud sync and household features
+3. Search items to add to your fridge
+4. Tap on a item to edit quantity, unit or expiry
+5. Use the shopping list tab to make a shopping list and for easy check of items already in fridge
+6. Use the AI-assistant for recipes, and cooking ideas
+7. Create or join a household to share your fridge with others
+8. Switch between **personal** and **household** fridge views
+9. Works offline, internet is needed for AI chats, cloud sync and household features
 
-- [development build](https://docs.expo.dev/develop/development-builds/introduction/)
-- [Android emulator](https://docs.expo.dev/workflow/android-studio-emulator/)
-- [iOS simulator](https://docs.expo.dev/workflow/ios-simulator/)
-- [Expo Go](https://expo.dev/go), a limited sandbox for trying out app development with Expo
+## Project Structure
 
-You can start developing by editing the files inside the **app** directory. This project uses [file-based routing](https://docs.expo.dev/router/introduction).
+- `tabs` - App screens
+  - `index.jsx` - Homepage which shows fridge contents, with personal/household toggle, also has browsing and adding to fridge ability
+  - `list.jsx` - Shopping list screen
+  - `assistant.jsx` - AI assistant interface storing previous chats
+  - `profile.jsx` - Register/login page and manages creating/joining/leaving households
 
-## Get a fresh project
+- `components` - Main components used _(not all included)_
+  - `FridgeCard.jsx` - Reusable component used to display fridge item
+  - `AddFoodModal.jsx` - Component used to add food from local/OpenFoodFacts database, also used to create and save custom food items
+  - `ChatMessage.jsx` - Reusable component to display user, assistant and error message chats for the AI-assistant screen, assistant messages displayed in markdown format
 
-When you're ready, run:
+- `services` - All services used for authentication, backend requests etc.
+  - `appwrite.js`, `authService.js` - Appwrite authentication + current user information
+  - `fridgeSync.js`, `householdUsers.js` - Calls to custom backend (hosted on Render)
+  - `sqlite.js` - Local storage layer for offline food database, fridge, shopping list and ai chat history
+  - `netinfo.js` - Network aware logic
+  - `openFood.js`, `openRouter.js` - calls to Open Food Facts server and Open Router AI service (routed through backend)
 
-```bash
-npm run reset-project
-```
+## Future Improvements
 
-This command will move the starter code to the **app-example** directory and create a blank **app** directory where you can start developing.
-
-## Learn more
-
-To learn more about developing your project with Expo, look at the following resources:
-
-- [Expo documentation](https://docs.expo.dev/): Learn fundamentals, or go into advanced topics with our [guides](https://docs.expo.dev/guides).
-- [Learn Expo tutorial](https://docs.expo.dev/tutorial/introduction/): Follow a step-by-step tutorial where you'll create a project that runs on Android, iOS, and the web.
-
-## Join the community
-
-Join our community of developers creating universal apps.
-
-- [Expo on GitHub](https://github.com/expo/expo): View our open source platform and contribute.
-- [Discord community](https://chat.expo.dev): Chat with Expo users and ask questions.
+- Add local notifications for items nearing expiry
+- Complete barcode scanning functionality
+- Add calender of daily food logs with nutritional breakdown
+- Add internationalization for multilingual support
