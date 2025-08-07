@@ -4,7 +4,7 @@
     "slug": "fridge-tracker-app",
     "version": "1.0.0",
     "orientation": "portrait",
-    "icon": "./assets/images/fridge-tracker-app-icon.jpeg",
+    "icon": "./assets/images/fridge-tracker-app-icon.png",
     "scheme": "fridgetrackerapp",
     "userInterfaceStyle": "automatic",
     "newArchEnabled": true,
