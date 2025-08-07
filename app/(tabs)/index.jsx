@@ -131,13 +131,20 @@ const Index = () => {
 
   if (fullLoading) {
     return (
-      <View className="flex-1 bg-blue-500 z-999 justify-center items-center">
-        <ActivityIndicator animating color="#fff" size="large" />
-        <Text className="text-white text-2xl mt-2">Preloading items</Text>
-        <Text className="text-white">
-          This may take a few minutes on first launch.
-        </Text>
-      </View>
+      <Modal
+        animationType="fade"
+        visible={fullLoading}
+        transparent
+        onRequestClose={() => {}}
+      >
+        <View className="flex-1 bg-blue-500 z-999 justify-center items-center">
+          <ActivityIndicator animating color="#fff" size="large" />
+          <Text className="text-white text-2xl mt-2">Preloading items</Text>
+          <Text className="text-white">
+            This may take a few minutes on first launch.
+          </Text>
+        </View>
+      </Modal>
     );
   }
 
