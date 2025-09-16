@@ -18,7 +18,7 @@ A mobile app for managing what's in your fridge, built to help households stay o
 - Built with **React Native** using **Expo** and **expo-router**
 - **SQLite** used for offline local storage of fridge, shopping list, AI chats, and food database
 - **Appwrite** used for authentication and backend syncing - used to keep household and fridge data
-- **NodeJS** used for backend functions, deployed on Render
+- **ExpressJS** used for backend functions, deployed on Render
 - **Open Food Facts API** for food search and initial food database
 - **Mistral (via OpenRouter)** for AI recipe chats
 - **NativeWind, Native-Paper** used for styling
